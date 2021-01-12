@@ -1,4 +1,5 @@
 #include "vdifile.h"
+#include "debug.h"
 bool VDIFile::VDIOpen(char *fn, int mode)
 {
     mode = 2;
@@ -81,7 +82,7 @@ void debug::displayBufferPage(uint8_t *buf, uint32_t count, uint32_t skip, uint6
         std::cout << std::hex << std::setfill('0') << std::setw(2) << h << "-";
         while(iHexW > 0)
         {
-            if(start <= offset && iNumHex > 0 && iHexCurrent >= skip)
+            if(skip <= offset && iNumHex > 0 && iHexCurrent >= skip)
             {
                 printf("%02x"/*<2 dig = 0*/, buf[iHexCursor]);
                 std::cout << " ";
@@ -100,15 +101,18 @@ void debug::displayBufferPage(uint8_t *buf, uint32_t count, uint32_t skip, uint6
         {
             if(skip <= offset && iNumChar > 0 && iCharCurrent >= skip)
             {
-                if(isprint(buf[iCharCursor]))
+                if(isprint(buf[iCharCursor])){
                     std::cout << static_cast<uint8_t>(buf[iCharCursor]);
-                else
+                    }
+                else{
                     std::cout << " ";
+                    }
             }
-            iCharCursor++;
-            iNumChar--;
             else
                 std::cout << " ";
+            iCharCursor++;
+            iNumChar--;
+
 
             iCharW--;
             iCharCurrent++;
@@ -119,7 +123,7 @@ void debug::displayBufferPage(uint8_t *buf, uint32_t count, uint32_t skip, uint6
     h++;
     iHexW = 16;
     iCharW = 16;
-    std::cout << "+________________________________________________+  +________________+\n"
+    std::cout << "+________________________________________________+  +________________+\n";
 }
 void debug::displayBuffer(uint8_t *buf, uint32_t count, uint64_t offset)
 {
