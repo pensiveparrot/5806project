@@ -14,21 +14,25 @@ void VDIFile::VDIClose(int fd)
 }
 ssize_t VDIFile::VDIRead(int fd, void *buf, size_t count)
 {
+    ssize_t curbyte;
     ssize_t bytesleft = count;
     while(bytesleft != 0)
     {
-        read(fd, &buf, bytesleft);
+        curbyte =   read(fd, &buf, bytesleft);
         bytesleft--;
     }
+    return curbyte;
 }
 ssize_t VDIFile::VDIWrite(int fd, void *buf, size_t count)
 {
+    ssize_t curbyte;
     size_t byteslefttowrite = 0;
     while(byteslefttowrite != count)
     {
-        write(fd, &buf, byteslefttowrite);
+        curbyte = write(fd, &buf, byteslefttowrite);
         byteslefttowrite++;
     }
+    return curbyte;
 }
 off_t VDIFile::VDISeek(int fd, off_t offset, int anchor)
 {
@@ -101,12 +105,14 @@ void debug::displayBufferPage(uint8_t *buf, uint32_t count, uint32_t skip, uint6
         {
             if(skip <= offset && iNumChar > 0 && iCharCurrent >= skip)
             {
-                if(isprint(buf[iCharCursor])){
+                if(isprint(buf[iCharCursor]))
+                {
                     std::cout << static_cast<uint8_t>(buf[iCharCursor]);
-                    }
-                else{
+                }
+                else
+                {
                     std::cout << " ";
-                    }
+                }
             }
             else
                 std::cout << " ";
