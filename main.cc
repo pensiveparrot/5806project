@@ -10,15 +10,14 @@ bool VDIFile::VDIOpen(char *fn)
 }
 void VDIFile::VDIClose(int fd)
 {
-    close(this->fd);
+	fd=this->fd;
+    close(fd);
 }
 ssize_t VDIFile::VDIRead(int fd, void *buf, size_t count)
 {
 	fd=this->fd;
-	ssize_t curbyte = read(fd, &buf, count);
-	if(curbyte>-1)
-	return curbyte;
-	perror("read");
+	return read(fd, buf, count);
+
 }
 ssize_t VDIFile::VDIWrite(int fd, void *buf, size_t count)
 {
@@ -32,12 +31,14 @@ ssize_t VDIFile::VDIWrite(int fd, void *buf, size_t count)
     }
     return curbyte;*/
     //lseek(this->fd,
-    write(fd,buf,count);
+    VDISeek(fd,0,0);
+    return write(fd,buf,count);
 }
 off_t VDIFile::VDISeek(int fd, off_t offset, int anchor)
 {
-    /*off_t location;
-    if(anchor == SEEK_SET)
+    fd=this->fd;
+    off_t location;
+/*    if(anchor == SEEK_SET)
     {
         location = lseek(this->fd, offset, anchor);
         if(location < 0) return 1;
@@ -54,20 +55,45 @@ off_t VDIFile::VDISeek(int fd, off_t offset, int anchor)
         location = lseek(this->fd, offset, anchor);
         if(location < 0) return 1;
         this->cursor = offset + this->fileSize;
+    }*/
+    switch(anchor){
+    case(SEEK_SET):
+    	location=lseek(fd,offset,anchor);
+    	if(location<0) return 1;
+    	this->cursor=location;
+    	break;
+    case(SEEK_CUR):
+    	location=lseek(fd,offset,anchor);
+    	if(location<0) return 1;
+    	this->cursor+=offset;
+    	break;
+    	case(SEEK_END):
+    	location=lseek(fd,offset,anchor);
+    	if(location<0) return 1;
+    	this->cursor=offset+this->fileSize;
+    	break;
+    default:
+    perror("seek");
+    break;
+    	
     }
-    return cursor;*/
-    fd=this->fd;
-    return lseek(fd,offset,anchor);
+    return this->cursor;
+   
+    //return lseek(fd,offset,anchor);
 }
 int main(int argc, char* argv[])
 {
     debug dbg;
-    void* buf[1024];
+    void* buf;
     VDIFile VDI;
     bool ab=VDI.VDIOpen(argv[1]);
     if(ab==true)
     {
-    ssize_t byytes=VDI.VDIRead(VDI.fd,(buf),1024);
+    buf=malloc(1024);
+    VDI.VDISeek(VDI.fd,0,SEEK_SET);
+    //lseek(VDI.fd,0,SEEK_SET);
+    //read(VDI.fd,buf,1024);
+   VDI.VDIRead(VDI.fd,buf,1024);
     dbg.displayBuffer((uint8_t*)buf,1024,0);
     VDI.VDIClose(VDI.fd);
     }
@@ -83,7 +109,7 @@ void debug::displayBufferPage(uint8_t *buf, uint32_t count, uint32_t skip, uint6
 	}
 	else
 	{
-	std::cout<<"\n";
+	std::cout<<std::endl;
 	break;
 	}
 	
