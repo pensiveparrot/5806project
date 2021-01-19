@@ -1,136 +1,112 @@
 #include "vdifile.h"
 #include "debug.h"
-bool VDIFile::VDIOpen(char *fn, int mode)
+bool VDIFile::VDIOpen(char *fn)
 {
-    mode = 2;
-    open(fn, mode);
-    if(filedescriptor = -1)
+    
+    this->fd=open(fn,O_RDONLY);
+    if(this->fd == -1)
         return false;
     return true;
 }
 void VDIFile::VDIClose(int fd)
 {
-    close(fd);
+    close(this->fd);
 }
 ssize_t VDIFile::VDIRead(int fd, void *buf, size_t count)
 {
-    ssize_t curbyte;
-    ssize_t bytesleft = count;
-    while(bytesleft != 0)
-    {
-        curbyte =   read(fd, &buf, bytesleft);
-        bytesleft--;
-    }
-    return curbyte;
+	fd=this->fd;
+	ssize_t curbyte = read(fd, &buf, count);
+	if(curbyte>-1)
+	return curbyte;
+	perror("read");
 }
 ssize_t VDIFile::VDIWrite(int fd, void *buf, size_t count)
 {
-    ssize_t curbyte;
+	fd=this->fd;
+    /*ssize_t curbyte;
     size_t byteslefttowrite = 0;
     while(byteslefttowrite != count)
     {
-        curbyte = write(fd, &buf, byteslefttowrite);
+        curbyte = write(this->fd, &buf, byteslefttowrite);
         byteslefttowrite++;
     }
-    return curbyte;
+    return curbyte;*/
+    //lseek(this->fd,
+    write(fd,buf,count);
 }
 off_t VDIFile::VDISeek(int fd, off_t offset, int anchor)
 {
-    off_t location;
+    /*off_t location;
     if(anchor == SEEK_SET)
     {
-        location = lseek(fd, offset, anchor);
+        location = lseek(this->fd, offset, anchor);
         if(location < 0) return 1;
-        cursor = location;
+        this->cursor = location;
     }
     if(anchor == SEEK_CUR)
     {
-        location = lseek(fd, offset, anchor);
+        location = lseek(this->fd, offset, anchor);
         if(location < 0) return 1;
-        cursor += offset;
+        this->cursor += offset;
     }
     if(anchor == SEEK_END)
     {
-        location = lseek(fd, offset, anchor);
+        location = lseek(this->fd, offset, anchor);
         if(location < 0) return 1;
-        cursor = offset + fileSize;
+        this->cursor = offset + this->fileSize;
     }
-    return cursor;
+    return cursor;*/
+    fd=this->fd;
+    return lseek(fd,offset,anchor);
 }
-int main()
+int main(int argc, char* argv[])
 {
+    debug dbg;
+    void* buf[1024];
+    VDIFile VDI;
+    bool ab=VDI.VDIOpen(argv[1]);
+    if(ab==true)
+    {
+    ssize_t byytes=VDI.VDIRead(VDI.fd,(buf),1024);
+    dbg.displayBuffer((uint8_t*)buf,1024,0);
+    VDI.VDIClose(VDI.fd);
+    }
+    
     return 0;
 }
-void debug::displayBufferPage(uint8_t *buf, uint32_t count, uint32_t skip, uint64_t offset)
-{
-    int h = 0;
-    int iHexW = 16;
-    int iCharW = 16;
-    int iCharCursor = 0;
-    int iHexCursor = 0;
-    int iNumHex = count;
-    int iNumChar = count;
-
-    int iHexCurrent = 0;
-    int iCharCurrent = 0;
-
-    if(skip >= 256)
-    {
-        iHexCursor = skip;
-        iCharCursor = skip;
-        skip = 0;
-    }
-    std::cout << std::hex << "0x" << offset << std::endl;
-    while(h < 16)
-    {
-        std::cout << std::hex << std::setfill('0') << std::setw(2) << h << "-";
-        while(iHexW > 0)
-        {
-            if(skip <= offset && iNumHex > 0 && iHexCurrent >= skip)
-            {
-                printf("%02x"/*<2 dig = 0*/, buf[iHexCursor]);
+void debug::displayBufferPage(uint8_t *buf, uint32_t count, uint32_t skip, uint64_t offset){
+	int c=0;
+	for(int i=skip;i<=skip+count;i++){
+	if(skip<=i&&i<skip+count){
+	uint8_t bytes=buf[i];
+	std::cout<<std::setfill('0')<<std::setw(2)<<std::hex<<(int)bytes<<" ";
+	}
+	else
+	{
+	std::cout<<"\n";
+	break;
+	}
+	
+	}
+	c++;
+	if(c%16==0)
+	std::cout<<std::endl;
+	    for (int j = skip; j <= count; j++) {
+        if (skip <= j && j < skip + count) {
+            uint8_t bytes = buf[j];
+            if (isprint(int(bytes))) {
+                std::cout << bytes << " ";
+            } else {
                 std::cout << " ";
-                iHexCursor++;
-                iNumHex--;
             }
-            else
-                std::cout << "	";
-            iHexW--;
-            iHexCurrent++;
         }
-
-        std::cout << std::hex << "|" << std::setfill('0') << std::setw(2) << h << "|";
-
-        while (iCharW > 0)
-        {
-            if(skip <= offset && iNumChar > 0 && iCharCurrent >= skip)
-            {
-                if(isprint(buf[iCharCursor]))
-                {
-                    std::cout << static_cast<uint8_t>(buf[iCharCursor]);
-                }
-                else
-                {
-                    std::cout << " ";
-                }
-            }
-            else
-                std::cout << " ";
-            iCharCursor++;
-            iNumChar--;
-
-
-            iCharW--;
-            iCharCurrent++;
+        else{
+            std::cout << std::endl;
+            break;
         }
-
     }
-    std::cout << "+\n";
-    h++;
-    iHexW = 16;
-    iCharW = 16;
-    std::cout << "+________________________________________________+  +________________+\n";
 }
+
 void debug::displayBuffer(uint8_t *buf, uint32_t count, uint64_t offset)
 {
     int counter = 0;
