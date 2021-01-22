@@ -1,4 +1,5 @@
 //#include <cstddef>
+#include <bit>
 #include "vdifile.h"
 #include "debug.h"
 
@@ -7,12 +8,12 @@ VDIFile::VDIFile(int tmapsize)
 {
     transmapsize = tmapsize;
     transmapptr = new int[transmapsize];
-    cursor = 0;
+    this->cursor = 0;
 }
 int VDIFile::VDIOpen(char *fn)
 {
 
-    //struct vdifile * file= (struct VDIFile *) malloc(sizeof(struct VDIFile));
+    
     this->fd = open(fn, O_RDONLY);
 
     if(fd == -1)
@@ -119,7 +120,7 @@ ssize_t VDIFile::VDIRead(int fd, void *buf, size_t count)
 
 ssize_t VDIFile::VDIWrite(int fd, void *buf, size_t count)
 {
-    fd = this->fd;
+   /* fd = this->fd;
     ssize_t byte;
     size_t bytesleft = count;
     while(bytesleft > 0)
@@ -128,7 +129,50 @@ ssize_t VDIFile::VDIWrite(int fd, void *buf, size_t count)
         bytesleft--;
     }
 
-    return byte;
+    return byte;*/
+    fd=this->fd;
+    size_t bytesleft = count,
+
+           byteswrote = 0,
+           byteswrotenow,
+           virtualpage,
+           bytestowrite,
+           offset,
+           physicalpage,
+           reallocation;
+           while(bytesleft>0)
+           {
+          offset = cursor % this->headerInfo.cbBlock;
+         virtualpage=cursor/this->header.cbBlock;
+        physicalpage = this->transmapptr[virtualpage];
+        reallocation = physicalPage * this->header.cbBlock + offset;
+        lseek(fd, reallocation + this->header.offData, SEEK_SET);
+           byteswrotenow=0;
+           if(reallocation<0){
+           lseek(fd,0,SEEK_END);
+           uint8_t* buf2= new uint8_t[this->header.cbBlock];
+           write(fd,buf2,this->header.cbBlock);
+           delete[] buf2;
+           physicalpage=this->header.cBlocksAllocated;
+           this->header.cbBlocksAllocated++;
+           this->transmapptr[virtualpage]=physicalpage;
+           lseek(fd,0,SEEK_SET);
+           write(fd,&this->header,sizeof(this->header));
+           lseek(fd,this->header.offBlocks,SEEK_SET);
+           write(fd,this->transmapptr,sizeof(uint32_t)*this->header.cbBlocks);
+           
+           
+           }
+           if(count<this->header.cbBlock)
+           bytestowrite=count;
+           else
+           bytestowrite=this->header.cbBlock;
+           byteswrotenow=write(fd,(uint8_t *)((buf) + bytesWritten),bytestowrite);
+           byteswrote+=byteswrotenow;
+           bytesleft-=byteswrotenow;
+           VDISeek(fd,byteswrotenow,SEEK_CUR)
+           }
+           return byteswrote;
 }
 
 int main(int argc, char *argv[])
