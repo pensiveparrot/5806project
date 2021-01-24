@@ -11,7 +11,7 @@ int VDIFile::VDIOpen(char *fn)
 
     this->fd = open(fn, O_RDONLY);
 
-    if(fd == -1)
+    if(this->fd == -1)
         return false;
     else
     {
