@@ -1,9 +1,9 @@
-#pragma once
+#ifndef _VDI_FILE_H_
+#define _VDI_FILE_H_
 #include <fcntl.h>
 #include <unistd.h>
-#include <cstring>
-#include <iostream>
 #include <iomanip>
+#include <cstddef>
 struct VDIHEADER
 {
     /** Just text info about image type, for eyes only. */
@@ -79,7 +79,7 @@ struct VDIHEADER
     char          uuidLinkage[16];
     /** Only for secondary images - UUID of previous image's last modification. */
     char          uuidParentModify[16];
-} VDIHEADER, *PVDIHEADER1;
+};
 
 class VDIFile
 {
@@ -101,4 +101,5 @@ public:
     int *map;
     int whence;
 };
+#endif
 

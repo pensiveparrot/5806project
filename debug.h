@@ -1,5 +1,5 @@
-#pragma once
-#include <cstring>
+#ifndef _DEBUG_H_
+#define _DEBUG_H_
 #include <iostream>
 #include <iomanip>
 class debug{
@@ -9,3 +9,4 @@ class debug{
 	
 	
 };
+#endif
