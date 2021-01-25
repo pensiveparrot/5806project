@@ -29,6 +29,7 @@ struct VDIHEADER
     /** Number of allocated blocks. */
     uint8_t     translationmap[256];
     uint32_t    cBlocksAllocated;
+    uint32_t postHeaderSize;
     /** UUID of image. */
     // char          uuidCreate;
     /** UUID of image's last modification. */

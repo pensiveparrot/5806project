@@ -5,7 +5,7 @@
 int main(int argc, char *argv[])
 {
     debug dbg;
-    uint8_t buf[4096];
+    uint8_t* buf= new uint8_t[4096];
     VDIFile VDI(512);
     bool ab = VDI.VDIOpen(argv[1]);
     if(ab == true)
@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
         printf("Image name: [%-64.64s]\n", VDI.header.szFileInfo);
         printf("Signature: 0x%08x\n", VDI.header.u32Signature);
         printf("Version: 0x%08x\n", VDI.header.u32Version);
-        std::cout << "Header size: 0x" << VDI.header.cbHeader << std::endl;
+        printf("Header size: 0x%08x  %d\n",VDI.header.postHeaderSize,VDI.header.postHeaderSize);
         printf("Image type: 0x%08x\n", VDI.header.u32Type);
         printf("Flags: 0x%08x\n", VDI.header.fFlags);
         /* printf("Virtual CHS: %d-%d-%d\n",VDI.header.cCylinders,
@@ -51,6 +51,7 @@ int main(int argc, char *argv[])
         printf("Image comment:\n");
         dbg.displayBuffer((uint8_t *)buf, 4096, 0);
         VDI.VDIClose(VDI.fd);
+        delete[] buf;
     }
 
     return 0;

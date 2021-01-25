@@ -4,6 +4,7 @@ VDIFile::VDIFile(int tmapsize)
     transmapsize = tmapsize;
     transmapptr = new int[transmapsize];
     this->cursor = 0;
+    this->fileSize=header.cbDisk;
 }
 int VDIFile::VDIOpen(char *fn)
 {
