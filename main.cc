@@ -7,8 +7,8 @@ int main(int argc, char *argv[])
     debug dbg;
     uint8_t* buf= new uint8_t[4096];
     VDIFile VDI(512);
-    bool ab = VDI.VDIOpen(argv[1]);
-    if(ab == true)
+    int ab = VDI.VDIOpen(argv[1]);
+    if(ab != -1 && ab )
     {
         //buf[4096];
         VDI.VDISeek(VDI.fd, 0, SEEK_SET);
