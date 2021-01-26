@@ -85,7 +85,7 @@ struct VDIHEADER
 struct VDIFile
 {
 
-   
+
     struct VDIHEADER header;
     //struct PVDIHEADER* h;
     int fileSize;
@@ -97,12 +97,12 @@ struct VDIFile
     int *map;
     int whence;
 
-    
+
 };
-	struct VDIFile* VDIOpen(char *fn);
-    void VDIClose(struct VDIFile *f);
-    ssize_t VDIRead(struct VDIFile *f, void *buf, size_t count);
-    ssize_t VDIWrite(struct VDIFile *f, void *buf, size_t count);
-    off_t VDISeek(VDIFile *f , off_t offset, int anchor);
+struct VDIFile *VDIOpen(char *fn);
+void VDIClose(struct VDIFile *f);
+ssize_t VDIRead(struct VDIFile *f, void *buf, size_t count);
+ssize_t VDIWrite(struct VDIFile *f, void *buf, size_t count);
+off_t VDISeek(VDIFile *f, off_t offset, int anchor);
 #endif
 

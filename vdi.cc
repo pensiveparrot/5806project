@@ -8,33 +8,33 @@
 }*/
 struct VDIFile *VDIOpen(char *fn)
 {
-//VDIHEADER header;
+    //VDIHEADER header;
 
     int fd = open(fn, 2);
 
     if(fd == -1)
-       return NULL;
-	
+        return NULL;
+
     else
     {
-        struct VDIFile *file=(struct VDIFile*)malloc(sizeof(struct VDIFile));
-       read(fd, &file->header, sizeof(file->header));
-       //lseek(this->fd, 0, SEEK_SET);
-       file->transmapsize = file->header.cBlocks;
-       file->transmapptr=new int[file->transmapsize];
+        struct VDIFile *file = (struct VDIFile *)malloc(sizeof(struct VDIFile));
+        read(fd, &file->header, sizeof(file->header));
+        //lseek(this->fd, 0, SEEK_SET);
+        file->transmapsize = file->header.cBlocks;
+        file->transmapptr = new int[file->transmapsize];
         //this->map = new int[transmapsize];
         lseek(fd, /*header.offBlocks*/file->header.offBlocks, SEEK_SET);
-        read(fd, file->transmapptr, file->transmapsize* sizeof(int));
-        file->fd=fd;
-		file->cursor = 0;
-		return file;
+        read(fd, file->transmapptr, file->transmapsize * sizeof(int));
+        file->fd = fd;
+        file->cursor = 0;
+        return file;
     }
     //return fd;
-    
+
 }
 void VDIClose(struct VDIFile *f)
 {
-    
+
     delete[] f->transmapptr;
     close(f->fd);
 }
@@ -46,30 +46,30 @@ off_t VDISeek(VDIFile *f, off_t offset, int anchor)
     switch(anchor)
     {
     case(SEEK_SET):
-		if(offset<f->header.cbDisk && offset>=0)
-		f->cursor = offset;
-		else
-		return -1;
+        if(offset < f->header.cbDisk && offset >= 0)
+            f->cursor = offset;
+        else
+            return -1;
         //location = lseek(fd, offset, anchor);
         //if(location < 0) return 1;
-        
+
         break;
     case(SEEK_CUR):
-    if(f->cursor+offset<f->header.cbDisk && f->cursor + offset>=0)
-		 f->cursor += offset;
-		 else
-		 return -1;
+        if(f->cursor + offset < f->header.cbDisk && f->cursor + offset >= 0)
+            f->cursor += offset;
+        else
+            return -1;
         //location = lseek(fd, offset, anchor);
         //if(location < 0) return 1;
-       
+
         break;
     case(SEEK_END):
         //location = lseek(fd, offset, anchor);
         //if(location < 0) return 1;
-        if(offset<0)
-        f->cursor = offset + f->header.cbDisk;
+        if(offset < 0)
+            f->cursor = offset + f->header.cbDisk;
         else
-        return -1;
+            return -1;
         break;
     default:
         perror("seek");
@@ -107,7 +107,7 @@ ssize_t VDIRead(struct VDIFile *f, void *buf, size_t count)
             else
                 bytestoread = f->header.cbBlock;
 
-            bytesjustread = read(f->fd, static_cast<uint8_t*>(buf) + bytesread, bytestoread);
+            bytesjustread = read(f->fd, static_cast<uint8_t *>(buf) + bytesread, bytestoread);
         }
         else
         {
@@ -142,7 +142,7 @@ ssize_t VDIWrite(struct VDIFile *f, void *buf, size_t count)
      }
 
      return byte;*/
-   // fd = this->fd;
+    // fd = this->fd;
     size_t bytesleft = count,
 
            byteswrote = 0,
@@ -180,7 +180,7 @@ ssize_t VDIWrite(struct VDIFile *f, void *buf, size_t count)
             bytestowrite = count;
         else
             bytestowrite = f->header.cbBlock;
-        byteswrotenow = write(f->fd, static_cast<uint8_t*>(buf) + byteswrote, bytestowrite);
+        byteswrotenow = write(f->fd, static_cast<uint8_t *>(buf) + byteswrote, bytestowrite);
         byteswrote += byteswrotenow;
         bytesleft -= byteswrotenow;
         VDISeek(f, byteswrotenow, SEEK_CUR);
