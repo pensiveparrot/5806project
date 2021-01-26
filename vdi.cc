@@ -1,70 +1,86 @@
 #include "vdifile.h"
-VDIFile::VDIFile(int tmapsize)
+/*VDIFile::VDIFile(int tmapsize)
 {
     transmapsize = tmapsize;
     transmapptr = new int[transmapsize];
-    this->cursor = 0;
-    this->fileSize=header.cbDisk;
-}
-int VDIFile::VDIOpen(char *fn)
+    cursor = 0;
+    fileSize=header.cbDisk;
+}*/
+struct VDIFile *VDIOpen(char *fn)
 {
+//VDIHEADER header;
 
+    int fd = open(fn, 2);
 
-    this->fd = open(fn, O_RDONLY);
-
-    if(this->fd == -1)
-        return false;
+    if(fd == -1)
+       return NULL;
+	
     else
     {
-        this->transmapsize = header.cBlocks;
-        //lseek(fd, 0, SEEK_SET);
-        read(this->fd, &header, sizeof(header));
-        this->map = new int[transmapsize];
-        lseek(this->fd, header.offBlocks, SEEK_SET);
-        read(this->fd, map, transmapsize * sizeof(int));
-
-
+        struct VDIFile *file=(struct VDIFile*)malloc(sizeof(struct VDIFile));
+       read(fd, &file->header, sizeof(file->header));
+       //lseek(this->fd, 0, SEEK_SET);
+       file->transmapsize = file->header.cBlocks;
+       file->transmapptr=new int[file->transmapsize];
+        //this->map = new int[transmapsize];
+        lseek(fd, /*header.offBlocks*/file->header.offBlocks, SEEK_SET);
+        read(fd, file->transmapptr, file->transmapsize* sizeof(int));
+        file->fd=fd;
+		file->cursor = 0;
+		return file;
     }
-    return this->fd;
-    //this->cursor = 0;
+    //return fd;
+    
 }
-void VDIFile::VDIClose(int fd)
+void VDIClose(struct VDIFile *f)
 {
-    fd = this->fd;
-    close(fd);
+    
+    delete[] f->transmapptr;
+    close(f->fd);
 }
-off_t VDIFile::VDISeek(int fd, off_t offset, int anchor)
+off_t VDISeek(VDIFile *f, off_t offset, int anchor)
 {
-    whence = anchor;
-    fd = this->fd;
+    //whence = anchor;
+    //fd = this->fd;
     off_t location;
-    switch(whence)
+    switch(anchor)
     {
     case(SEEK_SET):
+		if(offset<f->header.cbDisk && offset>=0)
+		f->cursor = offset;
+		else
+		return -1;
         //location = lseek(fd, offset, anchor);
         //if(location < 0) return 1;
-        this->cursor = offset;
+        
         break;
     case(SEEK_CUR):
+    if(f->cursor+offset<f->header.cbDisk && f->cursor + offset>=0)
+		 f->cursor += offset;
+		 else
+		 return -1;
         //location = lseek(fd, offset, anchor);
         //if(location < 0) return 1;
-        this->cursor += offset;
+       
         break;
     case(SEEK_END):
         //location = lseek(fd, offset, anchor);
         //if(location < 0) return 1;
-        this->cursor = offset + this->fileSize;
+        if(offset<0)
+        f->cursor = offset + f->header.cbDisk;
+        else
+        return -1;
         break;
     default:
         perror("seek");
         break;
 
     }
-    return this->cursor;
+    return f->cursor;
 
     //return lseek(fd,offset,anchor);
 }
-ssize_t VDIFile::VDIRead(int fd, void *buf, size_t count)
+ssize_t VDIRead(struct VDIFile *f, void *buf, size_t count)
 {
 
     size_t bytesleft = count,
@@ -74,28 +90,28 @@ ssize_t VDIFile::VDIRead(int fd, void *buf, size_t count)
            offset,
            physicalpage,
            reallocation;
-    fd = this->fd;
+    //this->fd;
     while(bytesleft > 0)
     {
-        virtualpage = cursor / this->header.cbBlock;
-        offset = cursor % this->header.cbBlock;
-        physicalpage = this->transmapptr[virtualpage];
-        reallocation = physicalpage * this->header.cbBlock + offset;
-        lseek(fd, reallocation + this->header.offData, SEEK_SET);
+        virtualpage = f->cursor / f->header.cbBlock;
+        offset = f->cursor % f->header.cbBlock;
+        physicalpage = f->transmapptr[virtualpage];
+        reallocation = physicalpage * f->header.cbBlock + offset;
+        lseek(f->fd, reallocation + f->header.offData, SEEK_SET);
         ssize_t bytesjustread = 0;
         if(reallocation >= 0)
         {
             size_t bytestoread = 0;
-            if(count < this->header.cbBlock)
+            if(count < f->header.cbBlock)
                 bytestoread = count;
             else
-                bytestoread = this->header.cbBlock;
+                bytestoread = f->header.cbBlock;
 
-            bytesjustread = read(fd, (uint8_t *)buf + bytesread, bytestoread);
+            bytesjustread = read(f->fd, static_cast<uint8_t*>(buf) + bytesread, bytestoread);
         }
         else
         {
-            for(int i = 0; i > this->header.cbBlock; i++)
+            for(int i = 0; i > f->header.cbBlock; i++)
             {
                 *(static_cast<uint8_t *>(buf) + (bytesread + bytesjustread)) = '0';
                 bytesjustread++;
@@ -105,7 +121,7 @@ ssize_t VDIFile::VDIRead(int fd, void *buf, size_t count)
             return -1;
         bytesread += bytesjustread;
         bytesleft -= bytesjustread;
-        VDISeek(fd, bytesjustread, SEEK_CUR);
+        VDISeek(f, bytesjustread, SEEK_CUR);
 
     }
 
@@ -114,7 +130,7 @@ ssize_t VDIFile::VDIRead(int fd, void *buf, size_t count)
 
 }
 
-ssize_t VDIFile::VDIWrite(int fd, void *buf, size_t count)
+ssize_t VDIWrite(struct VDIFile *f, void *buf, size_t count)
 {
     /* fd = this->fd;
      ssize_t byte;
@@ -126,7 +142,7 @@ ssize_t VDIFile::VDIWrite(int fd, void *buf, size_t count)
      }
 
      return byte;*/
-    fd = this->fd;
+   // fd = this->fd;
     size_t bytesleft = count,
 
            byteswrote = 0,
@@ -138,36 +154,36 @@ ssize_t VDIFile::VDIWrite(int fd, void *buf, size_t count)
            reallocation;
     while(bytesleft > 0)
     {
-        offset = cursor % this->header.cbBlock;
-        virtualpage = cursor / this->header.cbBlock;
-        physicalpage = this->transmapptr[virtualpage];
-        reallocation = physicalpage * this->header.cbBlock + offset;
-        lseek(fd, reallocation + this->header.offData, SEEK_SET);
+        offset = f->cursor % f->header.cbBlock;
+        virtualpage = f->cursor / f->header.cbBlock;
+        physicalpage = f->transmapptr[virtualpage];
+        reallocation = physicalpage * f->header.cbBlock + offset;
+        lseek(f->fd, reallocation + f->header.offData, SEEK_SET);
         byteswrotenow = 0;
         if(reallocation < 0)
         {
-            lseek(fd, 0, SEEK_END);
-            uint8_t *buf2 = new uint8_t[this->header.cbBlock];
-            write(fd, buf2, this->header.cbBlock);
+            lseek(f->fd, 0, SEEK_END);
+            uint8_t *buf2 = new uint8_t[f->header.cbBlock];
+            write(f->fd, buf2, f->header.cbBlock);
             delete[] buf2;
-            physicalpage = this->header.cBlocksAllocated;
-            this->header.cBlocksAllocated++;
-            this->transmapptr[virtualpage] = physicalpage;
-            lseek(fd, 0, SEEK_SET);
-            write(fd, &this->header, sizeof(this->header));
-            lseek(fd, this->header.offBlocks, SEEK_SET);
-            write(fd, this->transmapptr, sizeof(uint32_t)*this->header.cbBlock);
+            physicalpage = f->header.cBlocksAllocated;
+            f->header.cBlocksAllocated++;
+            f->transmapptr[virtualpage] = physicalpage;
+            lseek(f->fd, 0, SEEK_SET);
+            write(f->fd, &f->header, sizeof(f->header));
+            lseek(f->fd, f->header.offBlocks, SEEK_SET);
+            write(f->fd, f->transmapptr, sizeof(uint32_t)*f->header.cbBlock);
 
 
         }
-        if(count < this->header.cbBlock)
+        if(count < f->header.cbBlock)
             bytestowrite = count;
         else
-            bytestowrite = this->header.cbBlock;
-        byteswrotenow = write(fd, static_cast<uint8_t*>(buf) + byteswrote, bytestowrite);
+            bytestowrite = f->header.cbBlock;
+        byteswrotenow = write(f->fd, static_cast<uint8_t*>(buf) + byteswrote, bytestowrite);
         byteswrote += byteswrotenow;
         bytesleft -= byteswrotenow;
-        VDISeek(fd, byteswrotenow, SEEK_CUR);
+        VDISeek(f, byteswrotenow, SEEK_CUR);
     }
     return byteswrote;
 }

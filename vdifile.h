@@ -82,17 +82,12 @@ struct VDIHEADER
     char          uuidParentModify[16];
 };
 
-class VDIFile
+struct VDIFile
 {
 
-public:
-    int VDIOpen(char *fn);
-    VDIFile(int);
-    void VDIClose(int fd);
-    ssize_t VDIRead(int fd, void *buf, size_t count);
-    ssize_t VDIWrite(int fd, void *buf, size_t count);
-    off_t VDISeek(int fd, off_t offset, int anchor);
+   
     struct VDIHEADER header;
+    //struct PVDIHEADER* h;
     int fileSize;
     off_t cursor;
     int transmapsize;
@@ -101,6 +96,13 @@ public:
     int fd;
     int *map;
     int whence;
+
+    
 };
+	struct VDIFile* VDIOpen(char *fn);
+    void VDIClose(struct VDIFile *f);
+    ssize_t VDIRead(struct VDIFile *f, void *buf, size_t count);
+    ssize_t VDIWrite(struct VDIFile *f, void *buf, size_t count);
+    off_t VDISeek(VDIFile *f , off_t offset, int anchor);
 #endif
 
