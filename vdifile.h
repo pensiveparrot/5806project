@@ -47,11 +47,11 @@ struct VDIHEADER
     // char            szComment[256];
     /** Offset of Blocks array from the beginning of image file.
      * Should be sector-aligned for HDD access optimization. */
-     //translation map
+    //translation map
     uint32_t        offBlocks;
     /** Offset of image data from the beginning of image file.
      * Should be sector-aligned for HDD access optimization. */
-     //page offset
+    //page offset
     uint32_t        offData;
     /** Legacy image geometry (previous code stored PCHS there). */
     //  VDIDISKGEOMETRY LegacyGeometry;
