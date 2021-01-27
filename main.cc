@@ -10,13 +10,13 @@ int main(int argc, char *argv[])
     mbr[512];
     //VDIFile VDI(1024);
     struct VDIFile *f;
-    f = VDIOpen(argv[1]);
+    f=VDIOpen(argv[1]);
     if(f)
     {
         std::cout << "header" << std::endl;
         dbg.displayBuffer((uint8_t *)(&f->header), 400, 0);
         std::cout << std::endl << "translation map" << std::endl;
-        dbg.displayBuffer((uint8_t *)(f->transmapptr), 512, 0);
+        dbg.displayBuffer((uint8_t *)(&f->transmapptr), 512, 0);
         //bg.displayBuffer(buf, 512, 0);
         std::cout << std::endl;
         VDISeek(f, 256, SEEK_SET);

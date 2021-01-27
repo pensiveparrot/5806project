@@ -28,7 +28,7 @@ struct VDIHEADER
     /** Number of blocks. */
     uint32_t        cBlocks;
     /** Number of allocated blocks. */
-    //uint8_t     translationmap[256];
+    uint8_t     translationMap[256];
     uint32_t    cBlocksAllocated;
     uint32_t postHeaderSize;
     /** UUID of image. */
@@ -91,7 +91,7 @@ struct VDIFile
 
     struct VDIHEADER header;
     //struct PVDIHEADER* h;
-    int fileSize;
+   // int fileSize;
     off_t cursor;
     int transmapsize;
     int *transmapptr;
