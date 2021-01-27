@@ -39,45 +39,34 @@ void VDIClose(struct VDIFile *f)
 off_t VDISeek(VDIFile *f, off_t offset, int anchor)
 {
     uint8_t newpos;
-    //whence = anchor;
-    //fd = this->fd;
     off_t location;
     switch(anchor)
     {
     case(SEEK_SET):
-        if(offset < f->header.cbDisk && offset >= 0)
-            f->cursor = offset;
-        else
-            return -1;
-        //location = lseek(fd, offset, anchor);
-        //if(location < 0) return 1;
+
+        newpos = offset;
+
 
         break;
     case(SEEK_CUR):
-        if(f->cursor + offset < f->header.cbDisk && f->cursor + offset >= 0)
-            f->cursor += offset;
-        else
-            return -1;
-        //location = lseek(fd, offset, anchor);
-        //if(location < 0) return 1;
+
+        newpos += offset;
+
 
         break;
     case(SEEK_END):
-        //location = lseek(fd, offset, anchor);
-        //if(location < 0) return 1;
-        if(offset < 0)
-            f->cursor = offset + f->header.cbDisk;
-        else
-            return -1;
+
+        newpos = offset + f->header.cbDisk;
+
         break;
     default:
         perror("seek");
         break;
 
     }
+    if(newpos >= 0 && newpos <= f->header.cbDisk;)
+        newpos = f->cursor ;
     return f->cursor;
-
-    //return lseek(fd,offset,anchor);
 }
 ssize_t VDIRead(struct VDIFile *f, void *buf, size_t count)
 {
