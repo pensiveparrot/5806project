@@ -53,14 +53,16 @@ struct VDIHEADER
      * Should be sector-aligned for HDD access optimization. */
     //page offset
     uint32_t        offData;
+    uint32_t LegacyGeometry[4];
+    uint32_t LCHSGeometry[4];
     /** Legacy image geometry (previous code stored PCHS there). */
     //  VDIDISKGEOMETRY LegacyGeometry;
     /** Cylinders. */
-    uint32_t    cCylinders;
+    /*uint32_t    cCylinders;
     uint32_t cHeads;
     uint32_t    cSectors;
     /** Sector size. (bytes per sector) */
-    uint32_t    cbSector;
+    //uint32_t    cbSector;
     /** Was BIOS HDD translation mode, now unused. */
     uint32_t        u32Dummy;
     /** Size of disk (in bytes). */
@@ -91,7 +93,7 @@ struct VDIFile
 
     struct VDIHEADER header;
     //struct PVDIHEADER* h;
-   // int fileSize;
+    // int fileSize;
     off_t cursor;
     int transmapsize;
     int *transmapptr;

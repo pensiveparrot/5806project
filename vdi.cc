@@ -4,9 +4,9 @@ struct VDIFile *VDIOpen( char *fn)
 {
     //VDIHEADER header;
 
-   int filedesc = open(fn, O_RDONLY);
+    int filedesc = open(fn, O_RDONLY);
 
-    if(filedesc== -1)
+    if(filedesc == -1)
         return NULL;
 
     else
@@ -21,7 +21,7 @@ struct VDIFile *VDIOpen( char *fn)
         file->cursor = 0;
         return file;
     }
-    
+
 
 }
 void VDIClose(struct VDIFile *f)

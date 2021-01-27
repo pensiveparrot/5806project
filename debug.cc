@@ -43,6 +43,28 @@ void debug::displayBufferPage(uint8_t *buf, uint32_t count, uint32_t skip, uint6
         }
     }
 }
+void debug::dumpheader(struct VDIHEADER* header){
+    std::cout << "Image Name: " << header->szFileInfo << std::endl;
+    std::cout << "Signature: 0x" << std::hex << header->u32Signature << std::endl;
+    std::cout << "Version: " << std::hex << header->u32Version << endl;
+    std::cout << "Header Size: 0x" << std::hex <<std::setw(8) <<std::setfill('0') << headerInfo->cbHeader << "   " << dec << headerInfo->cbHeader << endl;
+    std::cout << "Image Type: 0x" <<std::hex<<std::setw(8) <<std::setfill('0') << headerInfo->imageType << endl;
+    std::cout << "Flags: 0x" <<std::hex<<std::setw(8) <<std::setfill('0') << headerInfo->fFlags << endl;
+    std::cout << "Virtual CHS: " << headerInfo->legacyGeometry[0] << "-" << headerInfo->legacyGeometry[1] << "-" << headerInfo->legacyGeometry[2] << endl;
+    std::cout << "Sector size: 0x" <<std::hex<<std::setw(8) <<std::setfill('0') << headerInfo->legacyGeometry[3] << "   " << dec << headerInfo->legacyGeometry[3] << endl;
+    std::cout << "Logical CHS: " << dec << headerInfo->LCHSGeometry[0] << "-" << headerInfo->LCHSGeometry[1] << "-" << headerInfo->LCHSGeometry[2] << endl;
+    std::cout << "Sector size: 0x" <<std::hex<<std::setw(8) <<std::setfill('0') << headerInfo->LCHSGeometry[3] << "   " << dec << headerInfo->LCHSGeometry[3] << endl;
+    std::cout << "Map Offset (""Offblocks""): 0x" <<std::hex<<std::setw(8) <<std::setfill('0') << headerInfo->offBlocks << "   " << dec << headerInfo->offBlocks << endl;
+    std::cout << "Frame offset (""OffData""): 0x" <<std::hex<<std::setw(8) <<std::setfill('0') << headerInfo->offData << "   " << dec << headerInfo->offData << endl;
+    std::cout << "Frame size (""cbBlock""): 0x" <<std::hex<<std::setw(8) <<std::setfill('0') << headerInfo->cbBlock << "   " << dec << headerInfo->cbBlock << endl;
+    std::cout << "Extra Frame Size: 0x" <<std::hex<<std::setw(8) <<std::setfill('0') << headerInfo->cbBlockExtra << "   " << dec << headerInfo->cbBlockExtra << endl;
+    std::cout << "Total frames (""cBlocks""): 0x" <<std::hex<<std::setw(8) <<std::setfill('0') << headerInfo->cBlocks << "   " << dec << headerInfo->cBlocks << endl;
+    std::cout << "Frames allocated: 0x" <<std::hex<<std::setw(8) <<std::setfill('0') << headerInfo->cBlocksAllocated << "   " << dec << headerInfo->cBlocksAllocated << endl;
+    std::cout << "Disk size (""cbDisk""): 0x" <<std::hex<< std::setw(16) <<std::setfill('0') << headerInfo->cbDisk << "   " << dec << headerInfo->cbDisk << endl;
+    std::cout << "Image Comment: " << endl;
+
+
+}
 
 
 void debug::displayBuffer(uint8_t *buf, uint32_t count, uint64_t offset)
