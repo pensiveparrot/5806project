@@ -2,6 +2,7 @@
 #define _DEBUG_H_
 #include <iostream>
 #include <iomanip>
+#include "vdifile.h"
 class debug
 {
 public:

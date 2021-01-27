@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
     if(f)
     {
         std::cout << "header" << std::endl;
-        dbg.dumpvdiheader(f->header);
+        dbg.dumpvdiheader(&f->header);
         dbg.displayBuffer((uint8_t *)(&f->header), 400, 0);
 
         std::cout << std::endl << "translation map" << std::endl;
