@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <iomanip>
 #include <cstddef>
+#include <cstring>
 struct VDIHEADER
 {
     /** Just text info about image type, for eyes only. */
@@ -27,7 +28,7 @@ struct VDIHEADER
     /** Number of blocks. */
     uint32_t        cBlocks;
     /** Number of allocated blocks. */
-    uint8_t     translationmap[256];
+    //uint8_t     translationmap[256];
     uint32_t    cBlocksAllocated;
     uint32_t postHeaderSize;
     /** UUID of image. */
@@ -46,9 +47,11 @@ struct VDIHEADER
     // char            szComment[256];
     /** Offset of Blocks array from the beginning of image file.
      * Should be sector-aligned for HDD access optimization. */
+     //translation map
     uint32_t        offBlocks;
     /** Offset of image data from the beginning of image file.
      * Should be sector-aligned for HDD access optimization. */
+     //page offset
     uint32_t        offData;
     /** Legacy image geometry (previous code stored PCHS there). */
     //  VDIDISKGEOMETRY LegacyGeometry;
