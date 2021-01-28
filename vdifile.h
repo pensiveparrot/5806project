@@ -5,32 +5,37 @@
 #include <iomanip>
 #include <cstddef>
 #include <cstring>
-struct VDIHEADER
+#include <stdlib.h>
+typedef struct VDIHEADER
 {
-    /** Just text info about image type, for eyes only. */
+	//preheader
     char            szFileInfo[64];
-    /** The image signature (VDI_IMAGE_SIGNATURE). */
     uint32_t        u32Signature;
-    /** The image version (VDI_IMAGE_VERSION). */
     uint32_t        u32Version;
-
-    /** The image type (VDI_IMAGE_TYPE_*). */
     uint32_t        u32Type;
-    /** Image flags (VDI_IMAGE_FLAGS_*). */
+    uint32_t 		cbHeader;
     uint32_t        fFlags;
-    /** Image comment. (UTF-8) */
     char            szComment[256];
-    /** Legacy image geometry (previous code stored PCHS there). */
-    /** Size of disk (in bytes). */
+    uint32_t        offBlocks;//translation map
+    uint32_t 		offData;
+     //  VDIDISKGEOMETRY LegacyGeometry;
+    uint32_t	 	LegacyGeometry[4];
+    /** Cylinders. */
+    //uint32_t    cCylinders;
+   // uint32_t cHeads;
+    //uint32_t    cSectors;
+    uint32_t        u32Dummy;
+    /** Sector size. (bytes per sector) */
+    //uint32_t    cbSector;
     uint64_t        cbDisk;
-    /** Block size. (For instance VDI_IMAGE_BLOCK_SIZE.) */
     uint32_t        cbBlock;
-    /** Number of blocks. */
+    uint32_t		cbBlockExtra;
     uint32_t        cBlocks;
-    /** Number of allocated blocks. */
-    uint8_t     translationMap[256];
     uint32_t    cBlocksAllocated;
-    uint32_t postHeaderSize;
+    /** Number of allocated blocks. */
+    //uint8_t     translationMap[256];
+    
+    //uint32_t postHeaderSize;
     /** UUID of image. */
     // char          uuidCreate;
     /** UUID of image's last modification. */
@@ -38,33 +43,19 @@ struct VDIHEADER
     /** Only for secondary images - UUID of primary image. */
     // RTUUID          uuidLinkage;
     /** Size of this structure in bytes. */
-    uint32_t        cbHeader;
+    //uint32_t        cbHeader;
     /** The image type (VDI_IMAGE_TYPE_*). */
     // uint32_t        u32Type;
     /** Image flags (VDI_IMAGE_FLAGS_*). */
     // uint32_t        fFlags;
     /** Image comment. (UTF-8) */
     // char            szComment[256];
-    /** Offset of Blocks array from the beginning of image file.
-     * Should be sector-aligned for HDD access optimization. */
-    //translation map
-    uint32_t        offBlocks;
-    /** Offset of image data from the beginning of image file.
-     * Should be sector-aligned for HDD access optimization. */
-    //page offset
-    uint32_t        offData;
-    uint32_t LegacyGeometry[4];
-    uint32_t LCHSGeometry[4];
-    /** Legacy image geometry (previous code stored PCHS there). */
-    //  VDIDISKGEOMETRY LegacyGeometry;
-    /** Cylinders. */
-    /*uint32_t    cCylinders;
-    uint32_t cHeads;
-    uint32_t    cSectors;
-    /** Sector size. (bytes per sector) */
-    //uint32_t    cbSector;
-    /** Was BIOS HDD translation mode, now unused. */
-    uint32_t        u32Dummy;
+//postheader
+	char          uuidCreate[16];
+	char          uuidModify[16];
+	char          uuidLinkage[16];
+	char          uuidParentModify[16];
+	uint32_t		LCHSGeometry[4];
     /** Size of disk (in bytes). */
     // uint64_t        cbDisk;
     /** Block size. (For instance VDI_IMAGE_BLOCK_SIZE.) Should be a power of 2! */
@@ -72,39 +63,39 @@ struct VDIHEADER
     /** Size of additional service information of every data block.
      * Prepended before block data. May be 0.
      * Should be a power of 2 and sector-aligned for optimization reasons. */
-    uint32_t        cbBlockExtra;
+   // uint32_t        cbBlockExtra;
     /** Number of blocks. */
     //uint32_t        cBlocks;
     /** Number of allocated blocks. */
     //uint32_t        cBlocksAllocated;
     /** UUID of image. */
-    char          uuidCreate[16];
+    
     /** UUID of image's last modification. */
-    char          uuidModify[16];
+    
     /** Only for secondary images - UUID of previous image. */
-    char          uuidLinkage[16];
+    
     /** Only for secondary images - UUID of previous image's last modification. */
-    char          uuidParentModify[16];
-};
+    
+}VDIHEADER;
 
-struct VDIFile
+typedef struct VDIFile
 {
 
 
     struct VDIHEADER header;
     //struct PVDIHEADER* h;
-    // int fileSize;
+   // int fileSize;
     off_t cursor;
     int transmapsize;
-    int *transmapptr;
+    //int *transmapptr;
     //int file;
     int fd;
     int *map;
-    int whence;
+    //int whence;
 
 
-};
-struct VDIFile *VDIOpen(char *fn);
+}VDIFile;
+struct VDIFile* VDIOpen(char *fn);
 void VDIClose(struct VDIFile *f);
 ssize_t VDIRead(struct VDIFile *f, void *buf, size_t count);
 ssize_t VDIWrite(struct VDIFile *f, void *buf, size_t count);
