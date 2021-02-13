@@ -5,17 +5,14 @@ struct VDIFile *VDIOpen(char *fn)
     //VDIHEADER header;
 
     int filedesc = open(fn, O_RDONLY);
-
-    if(filedesc == -1)
-        return nullptr;
-
-    else
-    {
-        //struct VDIFile* file = (struct VDIFile*)malloc(sizeof(struct VDIFile));
-        struct VDIFile* file = new VDIFile;
-        if(file==nullptr)
-        return nullptr;
-        file->fd=filedesc;
+	try{
+		if(filedesc==-1)
+		throw filedesc;
+		struct VDIFile* file = new VDIFile;
+		 try{
+		if(file==nullptr)
+		throw file;
+		file->fd=filedesc;
         read(file->fd, &file->header, sizeof(file->header));
         file->transmapsize = file->header.cBlocks;
         file->map = new int[file->transmapsize];
@@ -24,8 +21,26 @@ struct VDIFile *VDIOpen(char *fn)
         //file->fd = filedesc;
         file->cursor = 0;
         return file;
-    }
-	
+			}
+			catch(struct VDIFile* file)
+			{
+				std::cout<<"invalid file in VDIOpen";
+				return nullptr;
+				}
+		}
+		catch(int filedesc){
+			std::cout<<"invalid filedesc in VDIOpen";
+			return nullptr;
+			}
+
+    
+
+        //struct VDIFile* file = (struct VDIFile*)malloc(sizeof(struct VDIFile));
+        
+        
+        
+        
+        return nullptr;
 
 }
 void VDIClose(struct VDIFile *f)
@@ -33,6 +48,7 @@ void VDIClose(struct VDIFile *f)
 
     delete[] f->map;
     close(f->fd);
+    delete f;
 }
 off_t VDISeek(VDIFile *f, off_t offset, int anchor)
 {

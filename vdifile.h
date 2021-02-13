@@ -6,6 +6,7 @@
 #include <cstddef>
 #include <cstring>
 #include <stdlib.h>
+#include <iostream>
 typedef struct VDIHEADER
 {
 	//preheader
