@@ -56,7 +56,6 @@ void VDIClose(struct VDIFile *f)
 off_t VDISeek(VDIFile *f, off_t offset, int anchor)
 {
     off_t newpos;
-    off_t location;
     std::cout << "offset " << offset << std::endl;
     std::cout << "disk " << f->header.cbDisk << std::endl;
     if(anchor == SEEK_SET)
@@ -92,11 +91,6 @@ ssize_t VDIRead(struct VDIFile *f, void *buf, size_t count)
         if(cursize > nbytes)
             cursize = nbytes;
         ppagenum = f->map[vpagenum];
-        std::cout << vpagenum << std::endl;
-        std::cout << voffset << std::endl;
-        std::cout << cursize << std::endl;
-        std::cout << ppagenum << std::endl;
-        std::cout << count << std::endl;
         if(ppagenum >= 0xfffffffe)
             memset(buf, 0, cursize);
         else

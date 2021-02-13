@@ -53,52 +53,58 @@ void debug::displayBufferPage(uint8_t *buf, uint32_t count, uint32_t skip, uint6
         numt = count,
         numh = count,
         hcur = 0,
-        tcur = 0;
+        tcur = 0,
+        placeholder=0;
     if(skip >= 256)
     {
         hcursor = skip;
         tcursor = skip;
         skip = 0;
     }
-    //printf
-    printf("Offset: 0x");
-    printf("%02x", offset);
-    printf("\n");    //<< "Offset: 0x" << offset << std::endl;
-    printf("00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f     0...4...8...c...\n");
-    printf("+------------------------------------------------+  +----------------+\n");
+    printf("Offset: 0x%02x\n",offset);
+    printf(" 00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f     0...4...8...c...\n+-----------------------------------------------+  +----------------+\n");
 
     while(h < 16)
     {
         printf("|");
-        //std::cout<<std::hex<<std::setfill('0')<<std::setw(2)<<h<<"|";
         while(hwidth > 0)
         {
             if(skip <= offset && numh > 0 && hcur >= skip)
             {
-                printf("%02x", buf[hcursor]);
-                printf(" ");
-                hcursor++;
-                numh--;
+				if(numh==1||hwidth==1)
+				{	
+				printf("%02x", buf[hcursor]);
+				}
+				else{
+                printf("%02x ", buf[hcursor]);
+			}
+              
+			    hcursor++;
+                numh--;  
             }
             else
                 printf("   ");
 
+		
             hwidth--;
             hcur++;
         }
+		printf("|%x0|",placeholder);
+        placeholder++;
 
-        printf("|");
         //std::cout<<"|"<<std::setfill('0')<<std::setw(2)<<h<<"|";
         while(twidth > 0)
         {
             if(skip <= offset && numt > 0 && tcur >= skip)
             {
                 if(isprint(buf[tcursor]))
-                    printf("%c",/*static_cast<uint8_t>(*/buf[tcursor]);
+                {	
+                printf("%c",buf[tcursor]);
+			}
                 else
                     printf(" ");
 
-                tcursor++;
+			   tcursor++;
                 numt--;
             }
             else
@@ -107,36 +113,35 @@ void debug::displayBufferPage(uint8_t *buf, uint32_t count, uint32_t skip, uint6
             twidth--;
             tcur++;
         }
-        printf("   |\n");
+        printf("|\n");
         h++;
         hwidth = 16;
         twidth = 16;
     }
-    printf("+------------------------------------------------+  +----------------+\n");
-    std::cout << std::dec;
+    printf("+-----------------------------------------------+  +----------------+\n");
 }
 
 void debug::dumpvdiheader(struct VDIHEADER *header)
 {
-    std::cout << "Image Name: " << header->szFileInfo << std::endl;
-    std::cout << "Signature: 0x" << std::hex << header->u32Signature << std::endl;
-    std::cout << "Version: " << std::hex << header->u32Version << std::endl;
-    std::cout << "Header Size: 0x" << std::hex << std::setw(8) << std::setfill('0') << header->cbHeader << "   " << std::dec << header->cbHeader << std::endl;
-    std::cout << "Image Type: 0x" << std::hex << std::setw(8) << std::setfill('0') << header->u32Type << std::endl;
-    std::cout << "Flags: 0x" << std::hex << std::setw(8) << std::setfill('0') << header->fFlags << std::endl;
-    std::cout << "Virtual CHS: " << header->LegacyGeometry[0] << "-" << header->LegacyGeometry[1] << "-" << header->LegacyGeometry[2] << std::endl;
-    std::cout << "Sector size: 0x" << std::hex << std::setw(8) << std::setfill('0') << header->LegacyGeometry[3] << "   " << std::dec << header->LegacyGeometry[3] << std::endl;
-    std::cout << "Logical CHS: " << std::dec << header->LCHSGeometry[0] << "-" << header->LCHSGeometry[1] << "-" << header->LCHSGeometry[2] << std::endl;
-    std::cout << "Sector size: 0x" << std::hex << std::setw(8) << std::setfill('0') << header->LCHSGeometry[3] << "   " << std::dec << header->LCHSGeometry[3] << std::endl;
-    std::cout << "Map Offset (""Offblocks""): 0x" << std::hex << std::setw(8) << std::setfill('0') << header->offBlocks << "   " << std::dec << header->offBlocks << std::endl;
-    std::cout << "Frame offset (""OffData""): 0x" << std::hex << std::setw(8) << std::setfill('0') << header->offData << "   " << std::dec << header->offData << std::endl;
-    std::cout << "Frame size (""cbBlock""): 0x" << std::hex << std::setw(8) << std::setfill('0') << header->cbBlock << "   " << std::dec << header->cbBlock << std::endl;
-    std::cout << "Extra Frame Size: 0x" << std::hex << std::setw(8) << std::setfill('0') << header->cbBlockExtra << "   " << std::dec << header->cbBlockExtra << std::endl;
-    std::cout << "Total frames (""cBlocks""): 0x" << std::hex << std::setw(8) << std::setfill('0') << header->cBlocks << "   " << std::dec << header->cBlocks << std::endl;
-    std::cout << "Frames allocated: 0x" << std::hex << std::setw(8) << std::setfill('0') << header->cBlocksAllocated << "   " << std::dec << header->cBlocksAllocated << std::endl;
-    std::cout << "Disk size (""cbDisk""): 0x" << std::hex << std::setw(16) << std::setfill('0') << header->cbDisk << "   " << std::dec << header->cbDisk << std::endl;
-    std::cout << "Image Comment: " << std::endl;
-    std::cout << std::dec;
+    printf("Image Name: %s\n",header->szFileInfo);
+    printf("Signature: 0x%02x\n",header->u32Signature);
+    printf("Version: 0x%02x\n",header->u32Version);
+    printf("Header Size: 0x%08x\t%d\n",header->cbHeader,header->cbHeader);
+    printf("Image Type: 0x%08x\n",header->u32Type);
+    printf("Flags: 0x%08x\n",header->fFlags);
+    printf("Virtual CHS: %d-%d-%d\n",header->LegacyGeometry[0],header->LegacyGeometry[1],header->LegacyGeometry[2]);
+    printf("Sector size: 0x%08x\t%d\n",header->LegacyGeometry[3],header->LegacyGeometry[3]);
+    printf("Logical CHS: %d-%d-%d\n",header->LCHSGeometry[0],header->LCHSGeometry[1],header->LCHSGeometry[2]);
+    printf("Sector size: 0x%08x\t%d\n",header->LCHSGeometry[3],header->LCHSGeometry[3]);
+    printf("Map Offset (Offblocks): 0x%08x\t%d\n",header->offBlocks,header->offBlocks);
+    printf("Frame offset (OffData): 0x%08x\t%d\n",header->offData,header->offData);
+    printf("Frame size (cbBlock): 0x%08x\t%d\n",header->cbBlock,header->cbBlock);
+    printf("Extra Frame Size: 0x%08x\t%d\n",header->cbBlockExtra,header->cbBlockExtra);
+    printf("Total frames (cBlocks): 0x%08x\t%d\n",header->cBlocks,header->cBlocks);
+    printf("Frames allocated: 0x%08x\t%d\n",header->cBlocksAllocated,header->cBlocksAllocated);
+    printf("Disk size (cbDisk): %p\t%d\n",header->cbDisk,header->cbDisk);
+    //std::cout << "Image Comment: " << std::endl;
+    
 
 }
 
