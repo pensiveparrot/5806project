@@ -42,6 +42,7 @@ void debug::displayBufferPage(uint8_t *buf, uint32_t count, uint32_t skip, uint6
             break;
         }
     }
+    std::cout<<std::dec;
 }*/
 {
 	int h=0,
@@ -58,52 +59,58 @@ void debug::displayBufferPage(uint8_t *buf, uint32_t count, uint32_t skip, uint6
 	tcursor=skip;
 	skip=0;
 }
-std::cout << std::hex << "Offset: 0x" << offset << std::endl;
-	std::cout << "   00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f     0...4...8...c..." <<std::endl;
-    std::cout << "  +------------------------------------------------+  +----------------+" <<std::endl;
+//printf
+printf("Offset: 0x");
+printf("%02x",offset);
+printf("\n");	 //<< "Offset: 0x" << offset << std::endl;
+	printf("00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f     0...4...8...c...\n");
+    printf("+------------------------------------------------+  +----------------+\n");
 
 	while(h<16){
-		std::cout<<std::hex<<std::setfill('0')<<std::setw(2)<<h<<"|";
+		printf("|");
+		//std::cout<<std::hex<<std::setfill('0')<<std::setw(2)<<h<<"|";
 		while(hwidth>0)
 		{
 			if(skip<=offset&&numh>0&&hcur>=skip)
 			{
 				printf("%02x",buf[hcursor]);
-				std::cout<<" ";
+				printf(" ");
 				hcursor++;
 				numh--;
 				}
 				else
-				std::cout<<"   ";
+				printf("   ");
 				
 				hwidth--;
 				hcur++;
 			}
-			std::cout<<"|"<<std::setfill('0')<<std::setw(2)<<h<<"|";
+			
+			printf("|");
+			//std::cout<<"|"<<std::setfill('0')<<std::setw(2)<<h<<"|";
 		while(twidth>0){
 			if(skip<=offset&&numt>0&&tcur>=skip)
 			{
 			if(isprint(buf[tcursor]))
-			std::cout<<static_cast<uint8_t>(buf[tcursor]);
+			printf("%c",/*static_cast<uint8_t>(*/buf[tcursor]);
 			else
-			std::cout<<" ";
+			printf(" ");
 		
 		tcursor++;
 		numt--;
 		}
 		else
-		std::cout<<" ";
+		printf(" ");
 			
 			twidth--;
 			tcur++;
 			}
-			std::cout<<"|"<<std::endl;
+			printf("   |\n");
 		h++;
 		hwidth=16;
-		twidth=16;
+		twidth=16;	
 		}
-		    std::cout << "  +------------------------------------------------+  +----------------+" <<std::endl;
-	
+		printf("+------------------------------------------------+  +----------------+\n");
+	std::cout<<std::dec;
 	}
 
 void debug::dumpvdiheader(struct VDIHEADER *header){
@@ -125,7 +132,7 @@ void debug::dumpvdiheader(struct VDIHEADER *header){
     std::cout << "Frames allocated: 0x" <<std::hex<<std::setw(8) <<std::setfill('0') <<header->cBlocksAllocated << "   " <<std::dec <<header->cBlocksAllocated <<std::endl;
     std::cout << "Disk size (""cbDisk""): 0x" <<std::hex<< std::setw(16) <<std::setfill('0') <<header->cbDisk << "   " <<std::dec <<header->cbDisk <<std::endl;
     std::cout << "Image Comment: " <<std::endl;
-
+std::cout<<std::dec;
 
 }
 

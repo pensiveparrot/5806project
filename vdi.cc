@@ -52,13 +52,14 @@ void VDIClose(struct VDIFile *f)
 }
 off_t VDISeek(VDIFile *f, off_t offset, int anchor)
 {
-    uint8_t newpos;
+    off_t newpos;
     off_t location;
-    
+    std::cout<<"offset "<<offset<<std::endl;
+    std::cout<<"disk "<< f->header.cbDisk<<std::endl;
     if(anchor==SEEK_SET)
         newpos = offset;
     else if(anchor == SEEK_CUR)
-        newpos += offset;
+        newpos = f->cursor + offset;
     else if(anchor == SEEK_END)
         newpos = offset + f->header.cbDisk;
     else
@@ -87,6 +88,11 @@ ssize_t VDIRead(struct VDIFile *f, void *buf, size_t count)
 		if(cursize>nbytes)
 		cursize=nbytes;
 		ppagenum=f->map[vpagenum];
+		std::cout<<vpagenum<<std::endl;
+		std::cout<<voffset<<std::endl;
+		std::cout<<cursize<<std::endl;
+		std::cout<<ppagenum<<std::endl;
+		std::cout<<count<<std::endl;
 		if(ppagenum>=0xfffffffe)
 		memset(buf,0,cursize);
 		else{
@@ -163,19 +169,24 @@ ssize_t VDIWrite(struct VDIFile *f, void *buf, size_t count)
             lseek(f->fd, 0, SEEK_END);
             write(f->fd, tmp, f->header.cbBlock);
             delete[] tmp;
-        }
         f->map[virtualpage] = f->header.cBlocksAllocated;
+        lseek(f->fd,f->header.offBlocks,SEEK_SET);
         write(f->fd, f->map, sizeof(f->header.cbBlock));
         f->header.cBlocksAllocated++;
+        lseek(f->fd,0,SEEK_SET);
         write(f->fd, &f->header, sizeof(f->header));
         physicalpage = f->map[virtualpage];
+        }
+       
         lseek(f->fd, f->header.offData + physicalpage * f->header.cbBlock + offset, SEEK_SET);
         byteswrotenow = write(f->fd, buf, cursize);
         if(byteswrotenow != cursize)
             break;
+        f->cursor+=cursize;
         buf += cursize;
         bytesleft -= cursize;
         byteswritten += cursize;
     }
+    
     return byteswritten;
 }
