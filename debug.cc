@@ -144,7 +144,7 @@ void debug::dumpvdiheader(struct VDIHEADER *header)
     
 
 }
-
+//void debug::displaysuperblock();
 
 void debug::displayBuffer(uint8_t *buf, uint32_t count, uint64_t offset)
 {
