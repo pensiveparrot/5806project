@@ -39,8 +39,26 @@ int32_t bSize = size << spbk.s_log_block.size;
 
 int32_t fetchInode(struct ext2File *f,uint32_t iNum, struct Inode *buf)
 {
+	
+	iNum -= 1;
 
 	int32_t spbk = fetchsuperblock(*f, blocknum, buf);
+
+	uint32_t groupnum = iNum / spbks.s_blocks_inodes;
+
+	uint32_t ipb = blocksize / sizeof(Inode);
+
+	uint32_t b = bgdt[g].bg_inode_table;
+
+	b += iNum / ipb;
+
+	iNum% = ipb;
+	
+	uint32t tmp = fetchblock(b, Inode[ipb]);
+
+	Inode = tmp[iNum];
+
+	/*int32_t spbk = fetchsuperblock(*f, blocknum, buf);
 
 	//gets block size in bytes
 	//int32_t bSize = size << spbk.s_log_block.size;	
@@ -56,7 +74,7 @@ int32_t fetchInode(struct ext2File *f,uint32_t iNum, struct Inode *buf)
 	uint32_t bks = (bksPerGroup + bksTotal - 1) / bksTotal;
 	//blocknum*blocksize
 
-	int32_t block = fetchBlock(block_num);
+	int32_t block = fetchBlock(block_num);*/
 
 	return Inode;
 
