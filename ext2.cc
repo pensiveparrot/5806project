@@ -1,5 +1,22 @@
 #include "ext2.h"
-int32_t fetchsuperblock(struct ext2file *f, uint32_t blocknum,void *buf){
+
+int32_t fetchblock(struct ext2file *f, uint32_t blocknum,void *buf){
+	auto tmp = f->blocksize*blocknum;
+	PartitionSeek(f->p,tmp,SEEK_SET,f->vdi);
+	auto blocksread = PartitionRead(f->vdi,buf,f->blocksize,f->p);
+	if(blocksread!=f->blocksize)
+	return -1;
+	return 0;
+	}
+	int32_t writeblock(struct ext2file *f, uint32_t blocknum,void *buf){
+		auto tmp = f->blocksize*blocknum;
+		PartitionSeek(f->p,tmp,SEEK_SET,f->vdi);
+		auto blockswrote=PartitionWrite(f->vdi,buf,f->blocksize,f->p);
+		if(blockswrote!=f->blocksize)
+		return -1;
+		return 0;
+		}
+int32_t fetchsuperblock(struct ext2file *f, uint32_t blocknum,struct ext2superblock *buf){
 	if(blocknum==0){
 	PartitionSeek(f->p,1024,SEEK_SET,f->vdi);
 	PartitionRead(f->vdi,buf,1024,f->p);
@@ -21,8 +38,8 @@ struct ext2file *ext2Open(char *fn, int32_t pNum){
 	VDI=VDIOpen(fn);
 	if(!VDI)
 	return nullptr;
-	struct ext2superblock* superblock = new ext2superblock;
-	fetchsuperblock(ext2,(uint32_t)0,&superblock);
+	struct ext2superblock* sb = new ext2superblock;
+	fetchsuperblock(ext2,(uint32_t)0,sb);
 	struct PartitionFile* popen = PartitionOpen(VDI,pentry);
 	if(!popen)
 	return nullptr;

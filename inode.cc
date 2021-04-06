@@ -1,4 +1,4 @@
-#include "incode.h"
+#include "inode.h"
 
 
 //bool allocated = false;
@@ -35,28 +35,58 @@ so check the mode in octal (if you fetched inode right the mode would be 40755)
 the size should always be 1 block so if its a 1k filesystem it'll be 1k(1024)
 links field should be 4 or 5
 */
-int32_t bSize = size << spbk.s_log_block.size;	
+//int32_t bSize = size << spbk.s_log_block.size;	
 
-int32_t fetchInode(struct ext2File *f,uint32_t iNum, struct Inode *buf)
+int32_t fetchInode(struct ext2file *f,uint32_t iNum, struct Inode *buf)
 {
+	int32_t sb;
+	void* buf2;
+	uint8_t blocknum=0;
+	if(blocknum=0){
+	PartitionSeek(f->p,1024,SEEK_SET,f->vdi);
+	PartitionRead(f->vdi,buf2,f->blocksize,f->p);}
+	else if(blocknum>0)
+	{
+		fetchblock(f,f->superblock->s_first_data_block+blocknum*f->superblock->s_blocks_per_group,buf2);
+		}
+	/*switch (blocknum){
+	case 0:
+
+	break;
+	default:
+	
+}*/
+	
+	/* if bgnum==0, then use partitionseekto offset 1024 then partitionread the superblock
+	 * if bgnum>0 then fetchblock(sb.s_first_data_block+bgnum*sb.s_blocks_per_group), the superblock will be the first 1K of that block.
+	 * 
+	 * 
+	 * */
+	
+	
 	
 	iNum -= 1;
+	//struct ext2superblock *subb = new ext2superblock;
+	//struct ext2file* f = new ext2file;
+		struct ext2superblock* sbl = new ext2superblock;
+	int32_t fetchedsb = fetchsuperblock(f, blocknum, sbl	);
 
-	int32_t spbk = fetchsuperblock(*f, blocknum, buf);
+	uint32_t groupnum = iNum / f->superblock->s_inodes_per_group;
+	
+	iNum%=f->superblock->s_inodes_per_group;
+	
+	uint32_t ipb = f->blocksize / sizeof(Inode);
 
-	uint32_t groupnum = iNum / spbks.s_blocks_inodes;
 
-	uint32_t ipb = blocksize / sizeof(Inode);
 
-	uint32_t b = bgdt[g].bg_inode_table;
+	uint32_t b = f->bgdt->bg_inode_table;
 
 	b += iNum / ipb;
 
-	iNum% = ipb;
-	
-	uint32t tmp = fetchblock(b, Inode[ipb]);
-
-	Inode = tmp[iNum];
+	iNum %= ipb;
+	struct Inode *tmp = new Inode[ipb]; 
+	fetchblock(f,b,tmp);
+	struct Inode answer = tmp[iNum];
 
 	/*int32_t spbk = fetchsuperblock(*f, blocknum, buf);
 
@@ -75,34 +105,35 @@ int32_t fetchInode(struct ext2File *f,uint32_t iNum, struct Inode *buf)
 	//blocknum*blocksize
 
 	int32_t block = fetchBlock(block_num);*/
-
-	return Inode;
-
+	
+	
 }
 
 //int32_t fetchblock(int32_t blocknum 
 
 
-int32_t writeInode(struct Ext2File *f,uint32_t iNum, struct Inode *buf)
+int32_t writeInode(struct ext2file *f,uint32_t iNum, struct Inode *buf)
 {
 
 }
 
 
-bool int32_t inodeInUse(struct Ext2File *f,uint32_t iNum)
-{
+bool InodeInUse(struct ext2file *f,uint32_t iNum)
+{	
+	//iNum-=1;
+	//uint32_t groupnum = iNum / spbks.s_blocks_inodes;
 	bool inUse;
-
+	
 	
 
 	return inUse;
 }
 
-uint32_t allocateInode(struct Ext2File *f,int32_t group)
+uint32_t allocateInode(struct ext2file *f,int32_t group)
 {
-	if (inodeInUse(f, group) == false){
-		group = malloc(bsize);
-		return group;
+	int32_t bSize = size << f->superblock->s_log_block_size;
+	if (InodeInUse(f, group) == false){
+		malloc(bSize);
 	}
 	else{
 		return 0;
@@ -113,12 +144,12 @@ uint32_t allocateInode(struct Ext2File *f,int32_t group)
 	//return inodenumber;
 }
 
-int32_t freeInode(struct Ext2File *f,uint32_t iNum)
+int32_t freeInode(struct ext2file *f,uint32_t iNum)
 {
 
 }
 
-void displayInode(struct Ext2File *f, unint32_t iNum, struct Inode *buf)
+/*void displayInode(struct Ext2File *f, uint32_t iNum, struct Inode *buf)
 {
 	int32_t inodeToDisplay = fetchInode(struct Ext2File *f,uint32_t iNum, struct Inode *buf);
 
@@ -146,3 +177,4 @@ void displayInode(struct Ext2File *f, unint32_t iNum, struct Inode *buf)
 	
 
 }
+*/
