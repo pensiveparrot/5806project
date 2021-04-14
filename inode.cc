@@ -41,7 +41,7 @@ int32_t fetchInode(struct ext2file *f, uint32_t iNum, struct Inode *buf)
     int32_t sb;
     void *buf2;
     uint8_t blocknum = 0;
-    if(blocknum = 0)
+    if(blocknum == 0)
     {
         PartitionSeek(f->p, 1024, SEEK_SET, f->vdi);
         PartitionRead(f->vdi, buf2, f->blocksize, f->p);
