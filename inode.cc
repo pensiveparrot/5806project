@@ -20,7 +20,7 @@ iNum%=sb.s_inodes_per_group
 figure out which block has inode
 ipb inodeperblock
 ipb=blocksize/sizeof(inode)
-inode is typically 128 bytes but dont hardcode	
+inode is typically 128 bytes but dont hardcode
 similar for blocknode
 b=bgdt[g].bg_inode_table
 b+=iNum/ipb
@@ -34,135 +34,139 @@ so check the mode in octal (if you fetched inode right the mode would be 40755)
 the size should always be 1 block so if its a 1k filesystem it'll be 1k(1024)
 links field should be 4 or 5
 */
-//int32_t bSize = size << spbk.s_log_block.size;	
+//int32_t bSize = size << spbk.s_log_block.size;
 
-int32_t fetchInode(struct ext2file *f,uint32_t iNum, struct Inode *buf)
+int32_t fetchInode(struct ext2file *f, uint32_t iNum, struct Inode *buf)
 {
-	int32_t sb;
-	void* buf2;
-	uint8_t blocknum=0;
-	if(blocknum=0){
-	PartitionSeek(f->p,1024,SEEK_SET,f->vdi);
-	PartitionRead(f->vdi,buf2,f->blocksize,f->p);}
-	else if(blocknum>0)
-	{
-		fetchblock(f,f->superblock->s_first_data_block+blocknum*f->superblock->s_blocks_per_group,buf2);
-		}
-	/*switch (blocknum){
-	case 0:
+    int32_t sb;
+    void *buf2;
+    uint8_t blocknum = 0;
+    if(blocknum = 0)
+    {
+        PartitionSeek(f->p, 1024, SEEK_SET, f->vdi);
+        PartitionRead(f->vdi, buf2, f->blocksize, f->p);
+    }
+    else if(blocknum > 0)
+    {
+        fetchblock(f, f->superblock->s_first_data_block + blocknum * f->superblock->s_blocks_per_group, buf2);
+    }
+    /*switch (blocknum){
+    case 0:
 
-	break;
-	default:
-	
-}*/
-	
-	/* if bgnum==0, then use partitionseekto offset 1024 then partitionread the superblock
-	 * if bgnum>0 then fetchblock(sb.s_first_data_block+bgnum*sb.s_blocks_per_group), the superblock will be the first 1K of that block.
-	 * 
-	 * 
-	 * */
-	
-	
-	
-	iNum -= 1;
-	//struct ext2superblock *subb = new ext2superblock;
-	//struct ext2file* f = new ext2file;
-    struct ext2superblock* sbl = new ext2superblock;
-	int32_t fetchedsb = fetchsuperblock(f, blocknum, sbl	);
+    break;
+    default:
 
-	uint32_t groupnum = iNum / f->superblock->s_inodes_per_group;
-	
-	iNum%=f->superblock->s_inodes_per_group;
-	
-	uint32_t ipb = f->blocksize / sizeof(Inode);
+    }*/
+
+    /* if bgnum==0, then use partitionseekto offset 1024 then partitionread the superblock
+     * if bgnum>0 then fetchblock(sb.s_first_data_block+bgnum*sb.s_blocks_per_group), the superblock will be the first 1K of that block.
+     *
+     *
+     * */
 
 
 
-	uint32_t b = f->bgdt->bg_inode_table;
+    iNum -= 1;
+    //struct ext2superblock *subb = new ext2superblock;
+    //struct ext2file* f = new ext2file;
+    struct ext2superblock *sbl = new ext2superblock;
+    int32_t fetchedsb = fetchsuperblock(f, blocknum, sbl	);
 
-	b += iNum / ipb;
+    uint32_t groupnum = iNum / f->superblock->s_inodes_per_group;
 
-	iNum %= ipb;
-	struct Inode *tmp = new Inode[ipb]; 
-	fetchblock(f,b,tmp);
-	struct Inode answer = tmp[iNum];
+    iNum %= f->superblock->s_inodes_per_group;
 
-	/*int32_t spbk = fetchsuperblock(*f, blocknum, buf);
+    uint32_t ipb = f->blocksize / sizeof(Inode);
 
-	//gets block size in bytes
-	//int32_t bSize = size << spbk.s_log_block.size;	
-	
-	//off_t partition = PartitionSeek(*f, size, anchor, *f);
-	//PartitionRead(*f, buf, partition, *p);
-	//ext2Open(fn, 
 
-	int32_t bkDT = fetchBGDT(*f, blocknum, bdgt);
-	uint32_t bksPerGroup = spbk.s_blocks_per_group;
-	uint32_t bksTotal = spbk.s_blocks_count;
 
-	uint32_t bks = (bksPerGroup + bksTotal - 1) / bksTotal;
-	//blocknum*blocksize
+    uint32_t b = f->bgdt->bg_inode_table;
 
-	int32_t block = fetchBlock(block_num);*/
-	
-	
+    b += iNum / ipb;
+
+    iNum %= ipb;
+    struct Inode *tmp = new Inode[ipb];
+    fetchblock(f, b, tmp);
+    struct Inode answer = tmp[iNum];
+
+    /*int32_t spbk = fetchsuperblock(*f, blocknum, buf);
+
+    //gets block size in bytes
+    //int32_t bSize = size << spbk.s_log_block.size;
+
+    //off_t partition = PartitionSeek(*f, size, anchor, *f);
+    //PartitionRead(*f, buf, partition, *p);
+    //ext2Open(fn,
+
+    int32_t bkDT = fetchBGDT(*f, blocknum, bdgt);
+    uint32_t bksPerGroup = spbk.s_blocks_per_group;
+    uint32_t bksTotal = spbk.s_blocks_count;
+
+    uint32_t bks = (bksPerGroup + bksTotal - 1) / bksTotal;
+    //blocknum*blocksize
+
+    int32_t block = fetchBlock(block_num);*/
+
+
 }
 
-//int32_t fetchblock(int32_t blocknum 
+//int32_t fetchblock(int32_t blocknum
 
 
-int32_t writeInode(struct ext2file *f,uint32_t iNum, struct Inode *buf)
+int32_t writeInode(struct ext2file *f, uint32_t iNum, struct Inode *buf)
 {
-int32_t failure=0;
-iNum-=1;
-int32_t group = iNum/f->superblock->s_inodes_per_group;
-int32_t index = iNum%f->superblock->s_inodes_per_group;
-uint32_t *tmp= new uint32_t[f->blocksize];
-int32_t ipb = f->blocksize / f->superblock->s_inode_size;
-int32_t block = index/ipb;
-int32_t blockindex = index%ipb;
-failure= fetchblock(f,f->bgdt[group].bg_inode_table + block,(void*) tmp);
-if(failure == -1)
-return -1;
-memcpy(tmp+(blockindex*f->superblock->s_inode_size),buf,f->superblock->s_inode_size);
-failure=writeblock(f,f->bgdt[group].bg_inode_table + block,(void*)tmp);
+    int32_t failure = 0;
+    iNum -= 1;
+    int32_t group = iNum / f->superblock->s_inodes_per_group;
+    int32_t index = iNum % f->superblock->s_inodes_per_group;
+    uint32_t *tmp = new uint32_t[f->blocksize];
+    int32_t ipb = f->blocksize / f->superblock->s_inode_size;
+    int32_t block = index / ipb;
+    int32_t blockindex = index % ipb;
+    failure = fetchblock(f, f->bgdt[group].bg_inode_table + block, (void *) tmp);
+    if(failure == -1)
+        return -1;
+    memcpy(tmp + (blockindex * f->superblock->s_inode_size), buf, f->superblock->s_inode_size);
+    failure = writeblock(f, f->bgdt[group].bg_inode_table + block, (void *)tmp);
 
-return failure;
+    return failure;
 }
 
 
-bool InodeInUse(struct ext2file *f,uint32_t iNum)
-{	
-iNum-=1;
-int32_t group = iNum / f->superblock->s_inodes_per_group;
-int32_t index = iNum % f->superblock->s_blocks_per_group;
-uint32_t ipb = f->blocksize / f->superblock->s_inode_size;
-int32_t block = index / ipb;
-int32_t byte = index / 8;
-int32_t bit = index % 8;
-uint32_t *tmp = new uint32_t[f->blocksize];
-fetchblock(f,f->bgdt[group].bg_inode_bitmap + block,(void*)tmp);
-if(tmp[byte] & (1<<(bit)))
-return true;
-return false;
-}
-
-uint32_t allocateInode(struct ext2file *f,int32_t group)
+bool InodeInUse(struct ext2file *f, uint32_t iNum)
 {
-	//int32_t bSize = 1024 << f->superblock->s_log_block_size;
-	if (InodeInUse(f, group) == false){
-		malloc(f->blocksize);
-	}
-	else{
-		return 0;
-		//not entirely sure how to do this
-	}
-
-
-	//return inodenumber;
+    iNum -= 1;
+    int32_t group = iNum / f->superblock->s_inodes_per_group;
+    int32_t index = iNum % f->superblock->s_blocks_per_group;
+    uint32_t ipb = f->blocksize / f->superblock->s_inode_size;
+    int32_t block = index / ipb;
+    int32_t byte = index / 8;
+    int32_t bit = index % 8;
+    uint32_t *tmp = new uint32_t[f->blocksize];
+    fetchblock(f, f->bgdt[group].bg_inode_bitmap + block, (void *)tmp);
+    if(tmp[byte] & (1 << (bit)))
+        return true;
+    return false;
 }
 
-int32_t freeInode(struct ext2file *f,uint32_t iNum)
+uint32_t allocateInode(struct ext2file *f, int32_t group)
+{
+    //int32_t bSize = 1024 << f->superblock->s_log_block_size;
+    if (InodeInUse(f, group) == false)
+    {
+        malloc(f->blocksize);
+    }
+    else
+    {
+        return 0;
+        //not entirely sure how to do this
+    }
+
+
+    //return inodenumber;
+}
+
+int32_t freeInode(struct ext2file *f, uint32_t iNum)
 {
 
 }
@@ -191,8 +195,8 @@ int32_t freeInode(struct ext2file *f,uint32_t iNum)
 	std::cout << "Triple Indirect Block: ";
 
 
-	//wasn't sure of the syntax, saw something about this on this site http://www.science.smith.edu/~nhowe/262/oldlabs/ext2.html 
-	
+	//wasn't sure of the syntax, saw something about this on this site http://www.science.smith.edu/~nhowe/262/oldlabs/ext2.html
+
 
 }
 */

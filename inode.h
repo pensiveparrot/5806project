@@ -12,7 +12,8 @@
 #include "ext2.h"
 
 
-struct Inode {
+struct Inode
+{
     uint16_t i_mode;
     uint16_t i_uid;
     uint32_t i_size;
@@ -28,9 +29,9 @@ struct Inode {
     uint32_t i_block[15];
     uint32_t i_generation;
     uint32_t i_file_acl;
-    uint32_t i_sizeHigh; 
+    uint32_t i_sizeHigh;
     uint32_t i_faddr;
-    uint16_t i_blocksHigh; 
+    uint16_t i_blocksHigh;
     uint16_t reserved16;
     uint16_t i_uidHigh;
     uint16_t i_gidHigh;
@@ -39,12 +40,12 @@ struct Inode {
 
 
 //int size = 1024;
-int32_t fetchInode(struct ext2file *f,uint32_t iNum, struct Inode *buf);
-int32_t writeInode(struct ext2file *f,uint32_t iNum, struct Inode *buf);
-int32_t writeInode(struct ext2file *f,uint32_t iNum, struct Inode *buf);
-bool InodeInUse(struct ext2file *f,uint32_t iNum);
-uint32_t allocateInode(struct ext2file *f,int32_t group);
-int32_t freeInode(struct ext2file *f,uint32_t iNum);
+int32_t fetchInode(struct ext2file *f, uint32_t iNum, struct Inode *buf);
+int32_t writeInode(struct ext2file *f, uint32_t iNum, struct Inode *buf);
+int32_t writeInode(struct ext2file *f, uint32_t iNum, struct Inode *buf);
+bool InodeInUse(struct ext2file *f, uint32_t iNum);
+uint32_t allocateInode(struct ext2file *f, int32_t group);
+int32_t freeInode(struct ext2file *f, uint32_t iNum);
 void displayInode(struct ext2file *f, uint32_t iNum, struct Inode *buf);
 
 #endif

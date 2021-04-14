@@ -9,8 +9,9 @@
 #include <iostream>
 #include "vdifile.h"
 #include "partition.h"
-struct ext2superblock{
-	 uint32_t s_inodes_count; // num inodes
+struct ext2superblock
+{
+    uint32_t s_inodes_count; // num inodes
     uint32_t s_blocks_count; // Numblocks (guessing s for sum of count)
     uint32_t s_r_blocks_count; // Number of blocks reserved (guessing sum of count of reserved)
     uint32_t  s_free_blocks_count; // num free blocks (the sum of all free blocks of all BGs)
@@ -56,9 +57,10 @@ struct ext2superblock{
     uint32_t s_default_mount_options;
     uint32_t s_first_meta_bg;
     uint8_t padding[760];
-	
-	};
-struct ext2blockgroupdescriptor{
+
+};
+struct ext2blockgroupdescriptor
+{
     uint32_t bg_block_bitmap;
     uint32_t bg_inode_bitmap;
     uint32_t bg_inode_table;
@@ -68,20 +70,21 @@ struct ext2blockgroupdescriptor{
     uint16_t bg_pad;
     uint8_t bg_reserved[12];
 };
-struct ext2file{
-	struct ext2superblock *superblock;
-	struct ext2blockgroupdescriptor *bgdt;
-	struct VDIFile *vdi;
-	struct PartitionFile *p;
-	uint32_t blocksize = 1024 << superblock->s_log_block_size;
-	uint32_t numBGs;
-	};
+struct ext2file
+{
+    struct ext2superblock *superblock;
+    struct ext2blockgroupdescriptor *bgdt;
+    struct VDIFile *vdi;
+    struct PartitionFile *p;
+    uint32_t blocksize = 1024 << superblock->s_log_block_size;
+    uint32_t numBGs;
+};
 int32_t fetchsuperblock(struct ext2file *f, uint32_t blocknum, struct ext2superblock *sb);
-struct ext2file *ext2open(char *fn,int32_t pnum);
+struct ext2file *ext2open(char *fn, int32_t pnum);
 void ext2close(struct ext2file *f);
-int32_t fbff(struct ext2file* f, uint32_t blocknum, void* buf);
-int32_t fetchblock(struct ext2file *f, uint32_t blocknum,void *buf);
-int32_t writeblock(struct ext2file *f, uint32_t blocknum,void *buf);
+int32_t fbff(struct ext2file *f, uint32_t blocknum, void *buf);
+int32_t fetchblock(struct ext2file *f, uint32_t blocknum, void *buf);
+int32_t writeblock(struct ext2file *f, uint32_t blocknum, void *buf);
 int32_t writesuperblock(struct ext2file *f, uint32_t blocknum, struct ext2superblock *sb);
 int32_t fetchBGDT(struct ext2file *f, uint32_t blocknum, struct ext2blockgroupdescriptor *bgdt);
 int32_t writeBGDT(struct ext2file *f, uint32_t blocknum, struct ext2blockgroupdescriptor *bgdt);
