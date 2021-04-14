@@ -2,7 +2,6 @@
 
 
 //bool allocated = false;
-int size = 1024;
 
 //ik block sizes, blocks store 256
 //1480576 data blocks, each file is 4GB in size
@@ -68,7 +67,7 @@ int32_t fetchInode(struct ext2file *f,uint32_t iNum, struct Inode *buf)
 	iNum -= 1;
 	//struct ext2superblock *subb = new ext2superblock;
 	//struct ext2file* f = new ext2file;
-		struct ext2superblock* sbl = new ext2superblock;
+    struct ext2superblock* sbl = new ext2superblock;
 	int32_t fetchedsb = fetchsuperblock(f, blocknum, sbl	);
 
 	uint32_t groupnum = iNum / f->superblock->s_inodes_per_group;
@@ -114,26 +113,45 @@ int32_t fetchInode(struct ext2file *f,uint32_t iNum, struct Inode *buf)
 
 int32_t writeInode(struct ext2file *f,uint32_t iNum, struct Inode *buf)
 {
+int32_t failure=0;
+iNum-=1;
+int32_t group = iNum/f->superblock->s_inodes_per_group;
+int32_t index = iNum%f->superblock->s_inodes_per_group;
+uint32_t *tmp= new uint32_t[f->blocksize];
+int32_t ipb = f->blocksize / f->superblock->s_inode_size;
+int32_t block = index/ipb;
+int32_t blockindex = index%ipb;
+failure= fetchblock(f,f->bgdt[group].bg_inode_table + block,(void*) tmp);
+if(failure == -1)
+return -1;
+memcpy(tmp+(blockindex*f->superblock->s_inode_size),buf,f->superblock->s_inode_size);
+failure=writeblock(f,f->bgdt[group].bg_inode_table + block,(void*)tmp);
 
+return failure;
 }
 
 
 bool InodeInUse(struct ext2file *f,uint32_t iNum)
 {	
-	//iNum-=1;
-	//uint32_t groupnum = iNum / spbks.s_blocks_inodes;
-	bool inUse;
-	
-	
-
-	return inUse;
+iNum-=1;
+int32_t group = iNum / f->superblock->s_inodes_per_group;
+int32_t index = iNum % f->superblock->s_blocks_per_group;
+uint32_t ipb = f->blocksize / f->superblock->s_inode_size;
+int32_t block = index / ipb;
+int32_t byte = index / 8;
+int32_t bit = index % 8;
+uint32_t *tmp = new uint32_t[f->blocksize];
+fetchblock(f,f->bgdt[group].bg_inode_bitmap + block,(void*)tmp);
+if(tmp[byte] & (1<<(bit)))
+return true;
+return false;
 }
 
 uint32_t allocateInode(struct ext2file *f,int32_t group)
 {
-	int32_t bSize = size << f->superblock->s_log_block_size;
+	//int32_t bSize = 1024 << f->superblock->s_log_block_size;
 	if (InodeInUse(f, group) == false){
-		malloc(bSize);
+		malloc(f->blocksize);
 	}
 	else{
 		return 0;

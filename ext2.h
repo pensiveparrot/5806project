@@ -73,12 +73,13 @@ struct ext2file{
 	struct ext2blockgroupdescriptor *bgdt;
 	struct VDIFile *vdi;
 	struct PartitionFile *p;
-	uint32_t blocksize;
+	uint32_t blocksize = 1024 << superblock->s_log_block_size;
 	uint32_t numBGs;
 	};
 int32_t fetchsuperblock(struct ext2file *f, uint32_t blocknum, struct ext2superblock *sb);
 struct ext2file *ext2open(char *fn,int32_t pnum);
 void ext2close(struct ext2file *f);
+int32_t fbff(struct ext2file* f, uint32_t blocknum, void* buf);
 int32_t fetchblock(struct ext2file *f, uint32_t blocknum,void *buf);
 int32_t writeblock(struct ext2file *f, uint32_t blocknum,void *buf);
 int32_t writesuperblock(struct ext2file *f, uint32_t blocknum, struct ext2superblock *sb);
