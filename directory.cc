@@ -45,5 +45,44 @@ void rewindDir(struct Directory *d)
 		delete d;
 		
 		}
+		
+uint32_t searchDir(struct ext2file* f, uint32_t iNum, char* target){
+			struct Directory *d = new struct Directory;
+			openDir(iNum);
+			uint32_t indnum;
+			char* name = new char[255];
+			bool eof=true;
+			while(eof){
+				getNextDirent(d,indnum,name);
+				if(strcmp(name,target)==0){
+					delete[] name;
+					closeDir(d);
+					return indnum;
+					}
+				
+				}
+			closeDir(d);
+			delete[] name;
+			return 0;
+			}
+uint32_t traversePath(ext2file* f,char *path){
+	int start=1;
+	uint32_t len=strlen(path);
+	char *i=new char[len];
+	uint32_t inum=2;
+	while(start<len&&inum!=0)
+	{
+		int end = start+1;
+		while(path[end]!=0 && path[end] != '/')
+		end++;
+		std::string tmp = (std::string)path;
+		tmp=tmp.substr(start,end-start);
+		strcpy(i,tmp.c_str());
+		inum=searchDir(f,inum,i);
+		start=end+1;
+		}
+	return inum;
+	
+	}
 
 

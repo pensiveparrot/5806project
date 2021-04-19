@@ -24,5 +24,5 @@ struct Directory *openDir(uint32_t iNum);
 bool getNextDirent(struct Directory *d, uint32_t &iNum, char* name);
 void rewindDir(struct Directory *d);
 void closeDir(struct Directory *d);
-
+uint32_t searchDir(struct ext2file* f, uint32_t iNum, char* target);
 #endif
