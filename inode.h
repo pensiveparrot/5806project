@@ -41,6 +41,7 @@ struct Inode
 
 //int size = 1024;
 int32_t fetchInode(struct ext2file *f, uint32_t iNum, struct Inode *buf);
+int32_t fbff(struct ext2file *f, uint32_t blocknum, void *buf);
 int32_t writeInode(struct ext2file *f, uint32_t iNum, struct Inode *buf);
 int32_t writeInode(struct ext2file *f, uint32_t iNum, struct Inode *buf);
 bool InodeInUse(struct ext2file *f, uint32_t iNum);

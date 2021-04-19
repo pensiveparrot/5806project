@@ -19,13 +19,7 @@ int32_t writeblock(struct ext2file *f, uint32_t blocknum, void *buf)
     return 0;
 }
 
-int32_t fbff(struct ext2file *f, uint32_t blocknum, void *buf)
-{
 
-
-
-
-}
 int32_t fetchsuperblock(struct ext2file *f, uint32_t blocknum, struct ext2superblock *buf)
 {
     if(blocknum == 0)

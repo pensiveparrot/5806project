@@ -112,7 +112,6 @@ int32_t fetchInode(struct ext2file *f, uint32_t iNum, struct Inode *buf)
 
 //int32_t fetchblock(int32_t blocknum
 
-
 int32_t writeInode(struct ext2file *f, uint32_t iNum, struct Inode *buf)
 {
     int32_t failure = 0;
