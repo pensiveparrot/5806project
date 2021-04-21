@@ -151,7 +151,7 @@ bool InodeInUse(struct ext2file *f, uint32_t iNum)
 uint32_t allocateInode(struct ext2file *f, int32_t group)
 {
     //int32_t bSize = 1024 << f->superblock->s_log_block_size;
-    if (InodeInUse(f, group) == false)
+    /*if (InodeInUse(f, group) == false)
     {
         malloc(f->blocksize);
     }
@@ -159,7 +159,14 @@ uint32_t allocateInode(struct ext2file *f, int32_t group)
     {
         return 0;
         //not entirely sure how to do this
-    }
+    }*/
+	if (!InodeinUse(f, group){
+		malloc(group);	
+	}
+	else if (group == -1){
+		//dunno what to do here
+	}
+
 
 
     //return inodenumber;
@@ -167,7 +174,9 @@ uint32_t allocateInode(struct ext2file *f, int32_t group)
 
 int32_t freeInode(struct ext2file *f, uint32_t iNum)
 {
-
+	free(f);
+	
+	return 0;
 }
 
 /*void displayInode(struct Ext2File *f, uint32_t iNum, struct Inode *buf)
