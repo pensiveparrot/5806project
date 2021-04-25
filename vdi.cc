@@ -187,3 +187,6 @@ ssize_t VDIWrite(struct VDIFile *f, void *buf, size_t count)
 
     return byteswritten;
 }
+
+/*ssize_t CopyVDI(struct VDIFile *f){
+}*/
