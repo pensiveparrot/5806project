@@ -151,7 +151,7 @@ bool InodeInUse(struct ext2file *f, uint32_t iNum)
 uint32_t allocateInode(struct ext2file *f, int32_t group)
 {
     //int32_t bSize = 1024 << f->superblock->s_log_block_size;
-    if (InodeInUse(f, group) == false)
+    /*if (InodeInUse(f, group) == false)
     {
         malloc(f->blocksize);
     }
@@ -159,18 +159,27 @@ uint32_t allocateInode(struct ext2file *f, int32_t group)
     {
         return 0;
         //not entirely sure how to do this
-    }
+    }*/
+	if (!InodeinUse(f, group){
+		malloc(group);	
+	}
+	else if (group == -1){
+		malloc(group);
+		
+		//dunno what to do here
+	}
 
-
-    //return inodenumber;
+    return group;
 }
 
 int32_t freeInode(struct ext2file *f, uint32_t iNum)
 {
-
+	free(iNum);
+	
+	return 0;
 }
 
-/*void displayInode(struct Ext2File *f, uint32_t iNum, struct Inode *buf)
+void displayInode(struct Ext2File *f, uint32_t iNum, struct Inode *buf)
 {
 	int32_t inodeToDisplay = fetchInode(struct Ext2File *f,uint32_t iNum, struct Inode *buf);
 
@@ -185,17 +194,19 @@ int32_t freeInode(struct ext2file *f, uint32_t iNum)
 	std::cout << "Last Access: " << inodeToDisplay.i_atime;
 	std::cout << "Last Modification: " <<inodeToDisplay.i_mtime;
 	std::cout << "Deleted: " << inodeToDisplay.i_dtime;
-	std::cout << "Flags: " << inodeToDisplay.i_flags;
-	std::cout << "File Version: ";
+	std::cout << "Flags: " << inodeToDisplay.i_flags; 
+	
+	std::cout << "File Version: " << GetFileVersionInfo(buf);
+	/*
 	std::cout << "ACL block: ";
 	std::cout << "Direct Blocks: " ;
 	std::cout << "Single Indirect Block: ";
 	std::cout << "Double Indirect Block: ";
 	std::cout << "Triple Indirect Block: ";
-
+	*/
 
 	//wasn't sure of the syntax, saw something about this on this site http://www.science.smith.edu/~nhowe/262/oldlabs/ext2.html
 
 
 }
-*/
+
