@@ -96,17 +96,30 @@ off_t PartitionSeek(struct PartitionFile *p, off_t offset, int anchor, struct VD
     uint8_t newpos;
     off_t location;
 
-    if(anchor == SEEK_SET)
-        newpos = offset;
+    if(anchor == SEEK_SET){
+		if(offset<p->psize+p->pstart && offset>=0)
+        VDISeek(f,p->pstart+offset,SEEK_SET);
+	}
     else if(anchor == SEEK_CUR)
-        newpos += offset;
+		{
+			if(VDISeek(f,0,SEEK_CUR)+offset<p->psize+p->pstart && VDISeek(f,0,SEEK_CUR)+offset>=0)
+			VDISeek(f,offset,SEEK_CUR);
+			}
     else if(anchor == SEEK_END)
-        newpos = offset + f->header.cbDisk;
+        //newpos = offset + f->header.cbDisk;
+        {
+			if(offset<0)
+				VDISeek(f,p->psize+p->pstart+offset,SEEK_SET);
+				else
+				return -1;
+			}
     else
-        newpos = f->cursor;
+		return -1;
+    /*    newpos = f->cursor;
     if(newpos >= 0 && newpos <= f->header.cbDisk && newpos <= p->psize)
         f->cursor = newpos;
-    return f->cursor;
+    return f->cursor;*/
+    
 }
 
 

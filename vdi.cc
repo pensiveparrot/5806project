@@ -56,8 +56,6 @@ void VDIClose(struct VDIFile *f)
 off_t VDISeek(VDIFile *f, off_t offset, int anchor)
 {
     off_t newpos;
-    std::cout << "offset " << offset << std::endl;
-    std::cout << "disk " << f->header.cbDisk << std::endl;
     if(anchor == SEEK_SET)
         newpos = offset;
     else if(anchor == SEEK_CUR)
