@@ -1,7 +1,10 @@
-//#include <cstddef>
+ //#include <cstddef>
 #include "vdifile.h"
 #include "debug.h"
 #include "partition.h"
+#include "inode.h"
+#include "directory.h"
+#include "ext2.h"
 int main(int argc, char *argv[])
 {
     //struct VDIHEADER* header;
@@ -40,4 +43,10 @@ int main(int argc, char *argv[])
 
     return 0;
 }
-
+ssize_t copyfile(char* vdifilename, char* src, char* dst){
+	
+	ext2file *ext2 = new ext2file; 
+	
+	
+	
+	}

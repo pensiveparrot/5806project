@@ -160,26 +160,95 @@ uint32_t allocateInode(struct ext2file *f, int32_t group)
         return 0;
         //not entirely sure how to do this
     }*/
-	if (!InodeinUse(f, group){
-		malloc(group);	
-	}
-	else if (group == -1){
-		malloc(group);
+    uint32_t inode;
+    void* buf;
+    void* buf2;
+    uint8_t blocknum = 0;
+    if(blocknum == 0)
+    {
+        PartitionSeek(f->p, 1024, SEEK_SET, f->vdi);
+        PartitionRead(f->vdi, buf2, f->blocksize, f->p);
+    }
+    else if(blocknum > 0)
+    {
+        fetchblock(f, f->superblock->s_first_data_block + blocknum * f->superblock->s_blocks_per_group, buf2);
+    }
+    
+    
+	if (!InodeInUse(f, group)){
+		if(group>0)
+		{
+			for(int i=0;i<=group-1;i++)
+			{
+				auto bitmaploc= f->bgdt[i].bg_inode_bitmap;
+				uint32_t flag=-1;
+				flag=fetchblock(f,blocknum,buf);
+				if(flag<0)
+				return flag;
+				
+				for(int j = 0; j < f->blocksize/sizeof(int);j++)
+				{
+					//blocksize[j]=f->blocksize;
+					if(f->blocksize!= 0xff){
+						for(int k=0;k<8;k++)
+						{
+							if(!f->blocksize>>k & 1U){
+								inode=k+j*8+i*f->superblock->s_inodes_per_group+1;
+								f->blocksize^=1UL<<k;
+								flag=writeblock(f,blocknum,buf);
+								if(flag<0)
+								return flag;
+								}
+							k=8;
+							j=f->blocksize/sizeof(int);
+							i=group;
+							}
+							
+						
+						}
+					
+					}
+				
+				
+				}
+			
+				
+			
+			}
+			
+		if(inode<0)
+		return -1;
+		else{
+			f->bgdt[(inode-1)/f->superblock->s_inodes_per_group].bg_free_inodes_count--;
+			f->superblock->s_free_inodes_count--;
+			}	
+		return inode;
 		
-		//dunno what to do here
 	}
 
-    return group;
+    //return group;
 }
 
 int32_t freeInode(struct ext2file *f, uint32_t iNum)
 {
-	free(iNum);
+	iNum-=1;
+	auto group = iNum/f->superblock->s_inodes_per_group;
+	auto inode = iNum%f->superblock->s_inodes_per_group;
+	auto ipb = f->blocksize/f->superblock->s_inode_size;
+	auto bit=inode%8;
+	auto byte=inode/8; 
+	auto block=inode/ipb;
+	void* buf;
+	fetchblock(f,f->bgdt[group].bg_inode_bitmap+block,buf);
+	f->blocksize&=(1UL << bit);
+	writeblock(f,f->bgdt[group].bg_inode_bitmap+block,buf);
+	struct Inode *tmp = {0};
+	writeInode(f,iNum,tmp);
 	
 	return 0;
 }
 
-void displayInode(struct Ext2File *f, uint32_t iNum, struct Inode *buf)
+/*void displayInode(struct Ext2File *f, uint32_t iNum, struct Inode *buf)
 {
 	int32_t inodeToDisplay = fetchInode(struct Ext2File *f,uint32_t iNum, struct Inode *buf);
 
@@ -208,5 +277,6 @@ void displayInode(struct Ext2File *f, uint32_t iNum, struct Inode *buf)
 	//wasn't sure of the syntax, saw something about this on this site http://www.science.smith.edu/~nhowe/262/oldlabs/ext2.html
 
 
-}
+//}
+
 
