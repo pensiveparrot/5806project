@@ -188,7 +188,7 @@ uint32_t allocateInode(struct ext2file *f, int32_t group)
 				
 				for(int j = 0; j < f->blocksize/sizeof(int);j++)
 				{
-					//blocksize[j]=f->blocksize;
+					
 					if(f->blocksize!= 0xff){
 						for(int k=0;k<8;k++)
 						{
