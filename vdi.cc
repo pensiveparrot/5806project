@@ -188,9 +188,10 @@ ssize_t VDIWrite(struct VDIFile *f, void *buf, size_t count)
     return byteswritten;
 }
 
-/*ssize_t CopyVDI(struct VDIFile *f){
+ssize_t CopyVDI(struct VDIFile *f){
     
+    VDIOpen(*f);
     int destFile = open(0_WRONGLY|0_CREAT, 0666);
     //string destFile = 
     
-}*/
+}
