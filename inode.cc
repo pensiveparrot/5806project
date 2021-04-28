@@ -161,6 +161,7 @@ uint32_t allocateInode(struct ext2file *f, int32_t group)
         //not entirely sure how to do this
     }*/
     uint32_t inode;
+    uint32_t *tmp = new uint32_t[f->blocksize];
     void* buf;
     void* buf2;
     uint8_t blocknum = 0;
@@ -189,12 +190,12 @@ uint32_t allocateInode(struct ext2file *f, int32_t group)
 				for(int j = 0; j < f->blocksize/sizeof(int);j++)
 				{
 					
-					if(f->blocksize!= 0xff){
+					if(tmp[j]!= 0xff){
 						for(int k=0;k<8;k++)
 						{
-							if(!f->blocksize>>k & 1U){
+							if(!tmp[k]>>k & 1U){
 								inode=k+j*8+i*f->superblock->s_inodes_per_group+1;
-								f->blocksize^=1UL<<k;
+								tmp[k]=1UL<<k;
 								flag=writeblock(f,blocknum,buf);
 								if(flag<0)
 								return flag;
