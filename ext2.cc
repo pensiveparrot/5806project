@@ -37,7 +37,7 @@ int32_t fetchsuperblock(struct ext2file *f, uint32_t blocknum, struct ext2superb
 
     return 0;
 }
-struct ext2file *ext2Open(char *fn, int32_t pNum)
+struct ext2file *ext2open(char *fn,int32_t pNum)
 {
     struct ext2file *ext2 = new ext2file;
     struct VDIFile *VDI = new VDIFile;

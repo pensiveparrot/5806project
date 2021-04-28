@@ -25,4 +25,5 @@ bool getNextDirent(struct Directory *d, uint32_t &iNum, char* name);
 void rewindDir(struct Directory *d);
 void closeDir(struct Directory *d);
 uint32_t searchDir(struct ext2file* f, uint32_t iNum, char* target);
+uint32_t traversePath(ext2file* f,char *path);
 #endif

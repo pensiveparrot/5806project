@@ -80,7 +80,7 @@ struct ext2file
     uint32_t numBGs;
 };
 int32_t fetchsuperblock(struct ext2file *f, uint32_t blocknum, struct ext2superblock *sb);
-struct ext2file *ext2open(char *fn, int32_t pnum);
+struct ext2file *ext2open(char *fn, int32_t pNum);
 void ext2close(struct ext2file *f);
 int32_t fbff(struct ext2file *f, uint32_t blocknum, void *buf);
 int32_t fetchblock(struct ext2file *f, uint32_t blocknum, void *buf);
