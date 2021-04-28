@@ -1,0 +1,1 @@
+/usr/bin/c++     CMakeFiles/5806Project.dir/src/debug.cc.o CMakeFiles/5806Project.dir/src/directory.cc.o CMakeFiles/5806Project.dir/src/ext2.cc.o CMakeFiles/5806Project.dir/src/fileaccess.cc.o CMakeFiles/5806Project.dir/src/inode.cc.o CMakeFiles/5806Project.dir/src/main.cc.o CMakeFiles/5806Project.dir/src/partition.cc.o CMakeFiles/5806Project.dir/src/vdi.cc.o  -o 5806Project 
