@@ -70,14 +70,12 @@ uint32_t traversePath(ext2file* f,char *path){
 	uint32_t len=strlen(path);
 	char *i=new char[len];
 	uint32_t inum=2;
+	int end = start+1;
 	while(start<len&&inum!=0)
 	{
-		int end = start+1;
-		while(path[end]!=0 && path[end] != '/')
-		end++;
-		std::string tmp = (std::string)path;
-		tmp=tmp.substr(start,end-start);
-		strcpy(i,tmp.c_str());
+		if(end=='/')
+		break;
+		path[end] = 0;
 		inum=searchDir(f,inum,i);
 		start=end+1;
 		}
